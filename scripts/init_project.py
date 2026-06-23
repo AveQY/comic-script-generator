@@ -12,7 +12,8 @@ from datetime import datetime, timezone, timedelta
 
 
 def create_project(project_name: str, output_dir: str, density_mode: str = "B",
-                   total_episodes: int = 6, art_style: str = "", language: str = "zh-CN"):
+                   total_episodes: int = 6, art_style: str = "", language: str = "zh-CN",
+                   source: str = "local", source_config: dict = None):
     """Create a new comic project with full directory structure."""
     
     project_dir = os.path.join(output_dir, "projects", project_name)
@@ -33,7 +34,8 @@ def create_project(project_name: str, output_dir: str, density_mode: str = "B",
         "current_episode": 0,
         "episodes_planned": total_episodes,
         "status": "planning",
-        "source": "outline",
+        "source": source,
+        "source_config": source_config or {},
         "characters": [],
         "foreshadowing_active": [],
         "notes": ""
@@ -83,16 +85,44 @@ def main():
                         help="Art style description for AI prompts")
     parser.add_argument("--language", "-l", default="zh-CN",
                         help="Script language (default: zh-CN)")
+    parser.add_argument("--source", "-s", default="local", choices=["local", "api"],
+                        help="Script source: local file or online API")
+    parser.add_argument("--api-url", default="",
+                        help="API URL (required when source=api)")
+    parser.add_argument("--api-key", default="",
+                        help="API key (required when source=api)")
     
     args = parser.parse_args()
     
+    source_config = {}
+    if args.source == "api":
+        if not args.api_url or not args.api_key:
+            print("Error: --api-url and --api-key are required when --source=api")
+            sys.exit(1)
+        source_config = {
+            "mode": "api",
+            "api_url": args.api_url,
+            "api_key": args.api_key,
+            "method": "POST",
+            "params": {},
+            "headers": {
+                "Authorization": f"Bearer {args.api_key}",
+                "Content-Type": "application/json"
+            },
+            "response_path": "data.content",
+            "cache_enabled": True,
+            "cache_ttl": 3600
+        }
+
     project_dir = create_project(
         project_name=args.project_name,
         output_dir=args.output,
         density_mode=args.mode,
         total_episodes=args.episodes,
         art_style=args.art_style,
-        language=args.language
+        language=args.language,
+        source=args.source,
+        source_config=source_config
     )
     
     print(f"\nNext step: Provide your story outline to start generating episodes.")

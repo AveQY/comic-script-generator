@@ -16,7 +16,18 @@
   "current_episode": "number, 当前写到第几集",
   "episodes_planned": "number, 与 total_episodes 相同",
   "status": "planning | writing | reviewing | completed",
-  "source": "outline | hotspot",
+  "source": "outline | hotspot | api",
+  "source_config": {
+    "mode": "local | api",
+    "api_url": "string, 接口地址（mode=api 时必填）",
+    "api_key": "string, API 密钥（mode=api 时必填）",
+    "method": "GET | POST",
+    "params": {},
+    "headers": {},
+    "response_path": "data.content",
+    "cache_enabled": true,
+    "cache_ttl": 3600
+  },
   "hotspot_date": "YYYY-MM-DD, 热点抓取日期",
   "characters": ["角色名列表"],
   "foreshadowing_active": ["未回收伏笔描述"],
@@ -38,11 +49,28 @@
 | `current_episode` | number | ✅ | 当前已完成的集数 |
 | `episodes_planned` | number | ✅ | 与 total_episodes 相同，保持向后兼容 |
 | `status` | string | ✅ | 项目状态 |
-| `source` | string | ✅ | 内容来源 |
+| `source` | string | ✅ | 内容来源：outline（用户大纲）/ hotspot（热点抓取）/ api（在线接口） |
+| `source_config` | object | ❌ | 在线接口配置（source=api 时填写） |
 | `hotspot_date` | string | ❌ | 热点抓取日期（source=hotspot 时填写） |
 | `characters` | array | ❌ | 已创建的角色名列表 |
 | `foreshadowing_active` | array | ❌ | 当前未回收的伏笔描述 |
 | `notes` | string | ❌ | 项目备注，可记录特殊设定 |
+
+## source_config 字段说明（source=api 时使用）
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `mode` | string | ✅ | 固定为 `"api"` |
+| `api_url` | string | ✅ | 接口完整 URL |
+| `api_key` | string | ✅ | API 密钥 |
+| `method` | string | ❌ | HTTP 方法，默认 `"GET"` |
+| `params` | object | ❌ | URL 查询参数 |
+| `headers` | object | ❌ | 自定义请求头 |
+| `response_path` | string | ❌ | 响应 JSON 中提取脚本内容的路径，默认 `"data.content"` |
+| `cache_enabled` | bool | ❌ | 是否缓存接口结果，默认 `true` |
+| `cache_ttl` | number | ❌ | 缓存有效期（秒），默认 `3600` |
+
+接口规范详见 `references/script-api-spec.md`
 
 ## 示例
 

@@ -1,13 +1,13 @@
 ---
 name: comic-script-generator
 description: 根据大纲或热点生成漫画分镜稿，支持项目管理、角色档案、伏笔追踪
-version: 1.2.0
+version: 1.4.0
 tags: [creative, comic, screenplay, storyboard]
 ---
 
 # 漫画脚本生成器
 
-为漫画、图片故事生成详细分镜脚本的工作流程。支持从用户大纲或热点话题生成内容，维护项目结构、角色档案和伏笔追踪。
+为漫画、图片故事生成详细分镜脚本的工作流程。支持从用户大纲或热点话题生成内容，维护项目结构、角色档案和伏笔追踪。同时提供在线接口，允许外部系统远程调用生成脚本。
 
 ## 使用场景
 
@@ -20,7 +20,10 @@ tags: [creative, comic, screenplay, storyboard]
 **首次使用必须初始化：**
 
 1. 询问用户项目保存位置（默认：`~/comic-projects/`）
-2. 运行初始化脚本创建项目骨架：
+2. 询问稿子源：
+   - [1] 本地文件（从用户电脑选择脚本文件）
+   - [2] 在线接口（从远程 API 获取脚本内容）
+3. 运行初始化脚本创建项目骨架：
    ```bash
    python scripts/init_project.py "<项目名>" --output <保存位置> --mode B --episodes 6
    ```
@@ -36,11 +39,17 @@ tags: [creative, comic, screenplay, storyboard]
        ├── ep002_<标题>.md
        └── ...
    ```
-3. 将 config.json 内容展示给用户确认，允许修改：
+3. 如果选择在线接口，收集接口配置：
+   - 接口地址（如 `https://api.example.com/v1/generate`）
+   - API Key
+   - 请求方法（POST/GET）
+   - 请求体格式（参考 `references/script-api-spec.md`）
+   - 测试接口连通性
+4. 将 config.json 内容展示给用户确认，允许修改：
    - `density_mode`：A（对话多镜头少）/ B（平衡）/ C（电影短剧风）
    - `total_episodes`：计划总集数
    - `art_style`：AI 绘图风格描述
-4. 配置文件 schema 详见 `references/config-schema.md`
+5. 配置文件 schema 详见 `references/config-schema.md`
 
 ## 工作流程
 
@@ -517,6 +526,7 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 - `references/config-schema.md` — 项目配置文件 schema
 - `references/editing-workflow.md` — 续写与修改工作流
 - `references/hotspot-scraping.md` — 热点抓取平台可访问性指南
+- `references/script-api-spec.md` — 在线接口规范（端点定义、请求/响应格式、错误码）
 
 ## 脚本工具
 
@@ -545,6 +555,7 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 
 ## 更新日志
 
+- v1.4.0：新增在线脚本生成接口规范、config.json script_source 配置
 - v1.3.0：新增自动更新项目文件脚本、角色一致性检查脚本
 - v1.2.0：新增 AI 绘图提示词、初始化脚本、验证脚本、编辑工作流
 - v1.1.0：新增三种分镜密度模式（对话多/平衡/电影短剧风）
