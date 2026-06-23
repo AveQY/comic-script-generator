@@ -45,32 +45,9 @@ def create_project(project_name: str, output_dir: str, density_mode: str = "B",
     
     # Create empty markdown files
     files = {
-        "summary.md": f"# {project_name} - 项目摘要
-
-## 第1集：
-- **主要情节**：
-- **关键转折**：
-- **新增角色**：
-- **伏笔**：
-",
-        "characters.md": f"# {project_name} - 角色档案
-
-## 
-- **全名**：
-- **年龄**：
-- **外貌**：
-- **性格**：
-- **背景**：
-- **首次登场**：第1集
-- **关键情节**：
-",
-        "foreshadowing.md": f"# {project_name} - 伏笔追踪
-
-## 未回收
-- [ ] 
-
-## 已回收
-"
+        "summary.md": "# " + project_name + " - 项目摘要\n\n## 第1集：\n- **主要情节**：\n- **关键转折**：\n- **新增角色**：\n- **伏笔**：\n",
+        "characters.md": "# " + project_name + " - 角色档案\n\n## \n- **全名**：\n- **年龄**：\n- **外貌**：\n- **性格**：\n- **背景**：\n- **首次登场**：第1集\n- **关键情节**：\n",
+        "foreshadowing.md": "# " + project_name + " - 伏笔追踪\n\n## 未回收\n- [ ] \n\n## 已回收\n"
     }
     
     for filename, content in files.items():

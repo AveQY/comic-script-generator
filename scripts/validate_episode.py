@@ -1,3 +1,4 @@
+import argparse
 #!/usr/bin/env python3
 """
 Comic Script Generator - Episode Validation Script
@@ -29,16 +30,23 @@ def extract_dialogues(episode_path: str) -> list:
     return dialogues
 
 
-def check_ai_prompts(episode_path: str) -> bool:
-    """Check if each scene has an AI prompt section."""
+def check_ai_prompts(episode_path: str) -> tuple:
+    """Check if each scene has an AI prompt section.
+    
+    Returns:
+        (has_prompts, missing_scene_numbers)
+    """
     with open(episode_path, 'r', encoding='utf-8') as f:
         content = f.read()
     
+    # Split at Scene headers; first element is title/header, skip it
     scenes = re.split(r'^## Scene \d+', content, flags=re.MULTILINE)
     scenes = [s for s in scenes if s.strip()]
+    # Skip index 0 (it's the title/header before the first Scene)
+    scene_blocks = scenes[1:] if len(scenes) > 1 else scenes
     
     missing = []
-    for i, scene in enumerate(scenes, 1):
+    for i, scene in enumerate(scene_blocks, 1):
         if '**AI 提示词**' not in scene and 'AI 提示词' not in scene:
             missing.append(i)
     
