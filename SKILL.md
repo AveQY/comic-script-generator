@@ -89,32 +89,24 @@ tags: [creative, comic, screenplay, storyboard]
 
 5. **保存和维护**
    - 保存稿子到 `episodes/epXXX_<标题>.md`
+   - 运行自动更新脚本提取结构化信息：
+     ```bash
+     python scripts/update_project.py episodes/ep001_xxx.md --project-dir projects/<项目名> --episode-num 1
+     ```
+     脚本自动完成：
+     - 提取新角色 → 追加到 `characters.md`
+     - 扫描伏笔关键词 → 追加到 `foreshadowing.md`
+     - 生成摘要条目 → 追加到 `summary.md`
+     - 更新场景数/对话数 → 更新 `config.json`
    - 运行质量验证脚本检查生成质量：
      ```bash
      python scripts/validate_episode.py episodes/ep001_xxx.md --project-dir projects/<项目名>
      ```
-   - 验证通过后，提取关键内容，追加到 `summary.md`：
-     ```markdown
-     ## 第X集：<标题>
-     - 主要情节：...
-     - 关键转折：...
-     - 新增角色：...
-     - 场景数：X个
-     - 对话数：X段
+   - 运行角色一致性检查：
+     ```bash
+     python scripts/consistency_check.py episodes/ep001_xxx.md --project-dir projects/<项目名>
      ```
-   - 更新 `characters.md`：新角色档案
-     ```markdown
-     ## <角色名>
-     - 外貌：...
-     - 性格：...
-     - 背景：...
-     - 首次登场：第X集
-     - 关键情节：...
-     ```
-   - 更新 `foreshadowing.md`：
-     - 新增伏笔：`- [ ] <伏笔描述>（第X集埋下）`
-     - 回收伏笔：移除已回收项
-   - 更新 `config.json` 中的 `current_episode` 和 `updated_at`
+   - 所有检查通过后，项目文件已自动更新完成
 
 ### 模式二：热点话题生成
 
@@ -461,7 +453,7 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 
 ---
 
-**用户**：\"继续写第二集\"
+**用户**："继续写第二集"
 
 **AI**：
 ```
@@ -477,6 +469,28 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 - 下一步：第2集
 
 继续生成第2集...
+[生成分镜脚本]
+[运行 update_project.py 自动更新项目文件]
+[运行 validate_episode.py 验证质量]
+[运行 consistency_check.py 检查角色一致性]
+```
+
+---
+
+**用户**："生成第一集后自动整理项目文件"
+
+**AI**：
+```
+生成分镜脚本后，自动运行：
+
+1. python scripts/update_project.py episodes/ep001_xxx.md --project-dir projects/<项目名> --episode-num 1
+   → 自动提取角色、伏笔、摘要，更新 summary.md / characters.md / foreshadowing.md / config.json
+
+2. python scripts/validate_episode.py episodes/ep001_xxx.md --project-dir projects/<项目名>
+   → 验证场景数、AI 提示词完整性
+
+3. python scripts/consistency_check.py episodes/ep001_xxx.md --project-dir projects/<项目名>
+   → 检查角色一致性，识别未记录的角色
 ```
 
 ---
@@ -507,10 +521,31 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 ## 脚本工具
 
 - `scripts/init_project.py` — 项目初始化脚本，自动创建目录结构和配置文件
+- `scripts/update_project.py` — 自动更新项目文件，从分镜稿提取角色/伏笔/摘要并更新到对应文件
 - `scripts/validate_episode.py` — 分集验证脚本，检查场景数、AI 提示词、伏笔一致性
+- `scripts/consistency_check.py` — 角色一致性检查脚本，验证对话风格和外貌描述是否与档案一致
+
+## 脚本调试经验
+
+### 验证脚本常见问题
+
+1. **Scene 正则分割的偏移问题**
+   - `re.split(r'^## Scene \\d+', content)` 的第一个元素是标题/头部，不是场景
+   - 必须跳过第一个元素：`scenes[1:] if len(scenes) > 1 else scenes`
+   - 否则 AI 提示词检测会误报第一个场景缺失
+
+2. **Python f-string 多行语法**
+   - 含中文的多行 f-string 容易触发 `SyntaxError: unterminated f-string`
+   - 修复方案：改用字符串拼接 `"# " + project_name + " - 项目摘要\n\n..."`
+   - 或使用 `textwrap.dedent()` + 普通字符串
+
+3. **缺失 import**
+   - 脚本中用到 `argparse` 时必须显式 `import argparse`
+   - 不要假设全局已导入
 
 ## 更新日志
 
+- v1.3.0：新增自动更新项目文件脚本、角色一致性检查脚本
 - v1.2.0：新增 AI 绘图提示词、初始化脚本、验证脚本、编辑工作流
 - v1.1.0：新增三种分镜密度模式（对话多/平衡/电影短剧风）
 - v1.0.0：初始版本，支持分镜生成、项目管理、热点抓取
