@@ -1,7 +1,7 @@
 ---
 name: comic-script-generator
 description: 根据大纲或热点生成漫画分镜稿，支持项目管理、角色档案、伏笔追踪
-version: 1.4.0
+version: 1.5.0
 tags: [creative, comic, screenplay, storyboard]
 ---
 
@@ -608,6 +608,7 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 - `scripts/validate_episode.py` — 分集验证脚本，检查场景数、AI 提示词、伏笔一致性
 - `scripts/consistency_check.py` — 角色一致性检查脚本，验证对话风格和外貌描述是否与档案一致
 - `scripts/check_update.py` — 更新检查脚本，检测远程仓库是否有新提交（网络不通时自动跳过）
+- `scripts/batch_generate.py` — 批量生成脚本，自动抓取热点并生成多个独立漫画项目
 
 ## 脚本调试经验
 
