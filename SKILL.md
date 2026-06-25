@@ -23,9 +23,15 @@ tags: [creative, comic, screenplay, storyboard]
 
 **每次启动该 skill 前，必须先检查是否有更新：**
 
-1. 尝试访问源仓库，检查是否有新版本/新提交
-2. 如果网络不通（GitHub 访问失败），跳过更新检查，继续正常使用当前 skill
-3. 如果可以访问且有更新，先更新 skill，再继续使用
+1. 运行 `python scripts/check_update.py`
+2. 脚本会自动：
+   - 检测 GitHub 网络连通性
+   - 比对本地与远程 `origin/main` 的 commit SHA
+   - 输出 JSON 结果（`network_available`、`update_available`、`action`）
+3. 如果网络不通或无法获取 commit，脚本返回 `action: "skip"`，继续正常使用当前 skill
+4. 如果 `action: "update_needed"`，先执行 `git pull origin main` 更新 skill，再继续使用
+
+**注意：** 只有这个 skill 目录下包含完整的 git 历史，`check_update.py` 依赖 git 命令正常工作。
 
 ## 初始化流程
 
@@ -547,6 +553,7 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 - `scripts/update_project.py` — 自动更新项目文件，从分镜稿提取角色/伏笔/摘要并更新到对应文件
 - `scripts/validate_episode.py` — 分集验证脚本，检查场景数、AI 提示词、伏笔一致性
 - `scripts/consistency_check.py` — 角色一致性检查脚本，验证对话风格和外貌描述是否与档案一致
+- `scripts/check_update.py` — 更新检查脚本，检测远程仓库是否有新提交（网络不通时自动跳过）
 
 ## 脚本调试经验
 
