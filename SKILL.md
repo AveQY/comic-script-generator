@@ -15,6 +15,18 @@ tags: [creative, comic, screenplay, storyboard]
 - 抓取热点话题，生成相关创意内容
 - 管理长篇连载项目，追踪角色和伏笔
 
+## 更新地址
+
+源仓库：https://github.com/AveQY/comic-script-generator
+
+## 更新检查（每次使用前）
+
+**每次启动该 skill 前，必须先检查是否有更新：**
+
+1. 尝试访问源仓库，检查是否有新版本/新提交
+2. 如果网络不通（GitHub 访问失败），跳过更新检查，继续正常使用当前 skill
+3. 如果可以访问且有更新，先更新 skill，再继续使用
+
 ## 初始化流程
 
 **首次使用必须初始化：**
@@ -520,13 +532,14 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 请选择一个话题，或告诉我你想要的题材方向。
 ```
 
+ d2c77e4 (feat: add update check, references, and scripts)
 ## 参考资料
 
 - `references/ai-prompt-template.md` — AI 绘图提示词模板（SD/Midjourney/DALL-E 格式）
 - `references/config-schema.md` — 项目配置文件 schema
 - `references/editing-workflow.md` — 续写与修改工作流
 - `references/hotspot-scraping.md` — 热点抓取平台可访问性指南
-- `references/script-api-spec.md` — 在线接口规范（端点定义、请求/响应格式、错误码）
+- `references/script-api-spec.md` — 在线接口规范（端点定义、请求/响应格式、错误码），所有在线接口必须遵循此规范 d2c77e4 (feat: add update check, references, and scripts)
 
 ## 脚本工具
 
