@@ -599,7 +599,8 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 - `references/config-schema.md` — 项目配置文件 schema
 - `references/editing-workflow.md` — 续写与修改工作流
 - `references/hotspot-scraping.md` — 热点抓取平台可访问性指南
-- `references/script-api-spec.md` — 在线接口规范（端点定义、请求/响应格式、错误码），所有在线接口必须遵循此规范 d2c77e4 (feat: add update check, references, and scripts)
+- `references/script-api-spec.md` — 在线接口规范（端点定义、请求/响应格式、错误码），所有在线接口必须遵循此规范
+- `references/batch-generation.md` — 批量生成实现要点、参数默认值、错误处理矩阵、速率限制配置、Token 估算公式 d2c77e4 (feat: add update check, references, and scripts)
 
 ## 脚本工具
 
@@ -609,6 +610,55 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 - `scripts/consistency_check.py` — 角色一致性检查脚本，验证对话风格和外貌描述是否与档案一致
 - `scripts/check_update.py` — 更新检查脚本，检测远程仓库是否有新提交（网络不通时自动跳过）
 - `scripts/batch_generate.py` — 批量生成脚本，自动抓取热点并生成多个独立漫画项目
+
+## 批量生成实现要点
+
+基于 `batch_generate.py` 的实际运行经验，以下坑点必须在 skill 中约束：
+
+1. **跨平台配置路径**
+   - 禁止硬编码 `C:\\Users\\...` 或 `~/.hermes/`
+   - 必须按优先级搜索：环境变量 `HERMES_CONFIG` → CWD `./config.yaml` → skill 目录 → 平台标准目录
+   - 全部缺失时回退环境变量，绝不能假设本机路径
+
+2. **大纲完整传递**
+   - 禁止截断 outline（如 `outline[:2000]`）
+   - 每个 episode 必须传入完整 outline，否则后续分集失忆、伏笔断裂
+
+3. **LLM 重试与退避**
+   - 网络错误、429、5xx 必须自动重试（推荐 3 次）
+   - 退避公式：`base * 2^attempt + random jitter`
+   - 单次失败不能丢弃整个项目
+
+4. **速率限制**
+   - episode 之间插入 1.5-3 秒延迟
+   - 故事之间插入 2-5 秒冷却
+   - 避免触发 API rate limit 导致批量失败
+
+5. **断点续传**
+   - 必须生成 `.batch_checkpoint.json` 记录已完成项目
+   - 支持 Ctrl+C 安全中断，重新执行时跳过已完成项
+
+6. **项目名唯一性**
+   - 使用 `timestamp + index + UUID` 确保不冲突
+   - 禁止仅用时间戳，同秒启动会覆盖
+
+7. **配置解析健壮性**
+   - 跳过注释行和空行
+   - 正确处理带引号的值
+   - 失败时回退环境变量，不抛异常
+
+8. **验证容错**
+   - 每个验证脚本独立 try/except，超时 60 秒自动跳过
+   - 失败标记 WARN 而非终止整个批次
+
+9. **话题来源兜底**
+   - 百度抓取失败 → LLM 生成 20 个话题
+   - LLM 也失败 → 20 个硬编码安全话题
+   - 话题不足时循环轮换，不中断
+
+10. **成本估算**
+    - 启动时输出 LLM 调用次数、token 估算、预计耗时
+    - 非 auto 模式必须先问 "Proceed? [Y/n]"
 
 ## 脚本调试经验
 
