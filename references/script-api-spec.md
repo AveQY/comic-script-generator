@@ -28,6 +28,12 @@ POST /v1/generate
   "current_episode": 1,
   "topic": "校园恋爱故事",
   "outline": "主角在觉醒日发现自己的特殊能力...",
+  "art_style": "japanese-modern",
+  "style_guide": {
+    "positive": "masterpiece, best quality, modern manga style, bold lines, screentone, dynamic angles",
+    "negative": "worst quality, low quality, blurry, deformed, bad anatomy, extra limbs",
+    "description": "现代日漫风（少年/Jump 风，浓线条，网点纸）"
+  },
   "characters": [
     {
       "name": "阿明",
@@ -133,6 +139,11 @@ GET /v1/projects/{project_id}
   "name": "校园恋爱故事",
   "mode": "B",
   "config": { ... },
+  "style_guide": {
+    "positive": "...",
+    "negative": "...",
+    "description": "..."
+  },
   "episodes": [
     {
       "episode_number": 1,
@@ -175,6 +186,13 @@ POST /v1/continue
 | `RATE_LIMIT_EXCEEDED` | 429 | 请求频率超限 |
 | `INTERNAL_ERROR` | 500 | 服务器内部错误 |
 | `MODEL_ERROR` | 502 | 模型生成失败 |
+
+## 风格指南（style_guide）
+
+- 接口可传入 `style_guide` 对象，包含 `positive`、`negative`、`description` 三个字段
+- 服务端收到后直接写入项目的 `style_guide.md`，不依赖 LLM 生成
+- `style_guide` 优先级高于 `art_style`：同时存在时以 `style_guide` 为准
+- 若两者都为空，接口应返回 `INVALID_REQUEST` 错误
 
 ## 安全要求
 

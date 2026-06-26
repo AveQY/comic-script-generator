@@ -2,12 +2,20 @@
 
 每个分镜场景生成后，自动附带 AI 绘图提示词，适配主流图像生成工具。
 
+## 提示词来源（重要）
+
+**所有场景的 AI 提示词必须以项目 `style_guide.md` 为准**，不得让 LLM 自由拼凑风格词。生成流程：
+
+1. 读取 `style_guide.md` 的正向/反向提示词模板
+2. 将模板中的 `<art_style>` 替换为 `config.json` 的 `art_style` 值
+3. 注入每个场景的画面描述和镜头角度
+
 ## 提示词结构
 
 每个场景的提示词分为两部分：
 
-1. **正向提示词（Positive Prompt）**：画面描述 + 风格标签
-2. **反向提示词（Negative Prompt）**：需要避免的内容
+1. **正向提示词（Positive Prompt）**：画面描述 + 风格标签（来自 style_guide.md）
+2. **反向提示词（Negative Prompt）**：需要避免的内容（来自 style_guide.md）
 
 ## 格式规范
 
@@ -59,7 +67,7 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs, watermar
 
 正向：
 ```
-masterpiece, best quality, [角色名] [表情/动作], [环境], cinematic lighting, manga style, detailed face, [对话氛围关键词]
+masterpiece, best quality, [角色名] [表情/动作], [环境], cinematic lighting, <style_guide.positive>, detailed face, [对话氛围关键词]
 ```
 
 反向：
@@ -74,7 +82,7 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 
 正向：
 ```
-masterpiece, best quality, 阿明 低头沉思, 教室窗外樱花飘落, cinematic lighting, manga style, detailed face, melancholic atmosphere
+masterpiece, best quality, 阿明 低头沉思, 教室窗外樱花飘落, cinematic lighting, <style_guide.positive>, detailed face, melancholic atmosphere
 ```
 
 反向：
@@ -93,7 +101,7 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 
 正向：
 ```
-masterpiece, best quality, [镜头类型], [画面描述], cinematic lighting, [艺术风格]
+masterpiece, best quality, [镜头类型], [画面描述], cinematic lighting, <style_guide.positive>
 ```
 
 反向：
@@ -108,7 +116,7 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 
 正向：
 ```
-masterpiece, best quality, medium shot, 阿明转身看着小雨, 夕阳光晕笼罩, cinematic lighting, manga style
+masterpiece, best quality, medium shot, 阿明转身看着小雨, 夕阳光晕笼罩, cinematic lighting, <style_guide.positive>
 ```
 
 反向：
@@ -127,7 +135,7 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 
 正向：
 ```
-masterpiece, best quality, [镜头类型], [单动作/表情], cinematic lighting, manga style, [连续镜头序号]
+masterpiece, best quality, [镜头类型], [单动作/表情], cinematic lighting, <style_guide.positive>, [连续镜头序号]
 ```
 
 反向：

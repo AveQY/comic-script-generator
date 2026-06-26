@@ -1,7 +1,7 @@
 ---
 name: comic-script-generator
 description: 根据大纲或热点生成漫画分镜稿，支持项目管理、角色档案、伏笔追踪
-version: 1.5.1
+version: 1.6.0
 tags: [creative, comic, screenplay, storyboard]
 ---
 
@@ -196,6 +196,11 @@ tags: [creative, comic, screenplay, storyboard]
 4. **写作风格延续**
    - 保持与已写集数相同的对话风格和分镜密度
    - 同一项目不能中途改变密度模式
+   - **图片风格统一（强制）**：同一项目的所有集必须使用相同的 AI 绘图风格
+     - 生成时从 `style_guide.md` 读取正向/反向提示词，注入每个场景
+     - 如果 `style_guide.md` 缺失，禁止生成，先运行 `init_project.py` 初始化
+     - 续写时校验新增集数的 AI 提示词是否与 `style_guide.md` 一致
+     - 在线接口传入 `style_guide` 字段时，优先级高于 `art_style`
 
 ### 模式四：批量生成（热点驱动）
 
@@ -242,7 +247,7 @@ python scripts/batch_generate.py -n 2 -m A -o ./my-comics
 | `--mode` / `-m` | 分镜密度 A/B/C | B |
 | `--episodes` / `-e` | 每故事集数 | 5 |
 | `--output` / `-o` | 输出目录 | ~/comic-projects |
-| `--art-style` / `-a` | AI 绘图风格描述 | (default) |
+| `--art-style` / `-a` | AI 绘图风格描述，支持预设 key 或自定义描述 | `japanese-modern` |
 | `--auto` | 全自动模式，不暂停确认 | false |
 
 **设计要点**：

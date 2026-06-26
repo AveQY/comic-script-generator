@@ -53,6 +53,59 @@ def check_ai_prompts(episode_path: str) -> tuple:
     return len(missing) == 0, missing
 
 
+def check_style_guide_consistency(project_dir: str, episode_path: str) -> list:
+    """Check if episode uses style_guide.md for AI prompts.
+    
+    Returns:
+        list of issue strings
+    """
+    issues = []
+    
+    # Check style_guide.md exists
+    guide_path = os.path.join(project_dir, "style_guide.md")
+    if not os.path.exists(guide_path):
+        issues.append("Missing style_guide.md - run init_project.py to initialize")
+        return issues
+    
+    # Read style_guide.md
+    with open(guide_path, 'r', encoding='utf-8') as f:
+        guide_content = f.read()
+    
+    # Extract positive/negative prompts from style_guide
+    positive_match = re.search(r'## 正向提示词\s*\n(.+?)(?:\n##|$)', guide_content, re.DOTALL)
+    negative_match = re.search(r'## 反向提示词\s*\n(.+?)(?:\n##|$)', guide_content, re.DOTALL)
+    
+    if not positive_match or not negative_match:
+        issues.append("style_guide.md format invalid - missing 正向/反向提示词 sections")
+        return issues
+    
+    positive_prompt = positive_match.group(1).strip()
+    negative_prompt = negative_match.group(1).strip()
+    
+    # Read episode content
+    with open(episode_path, 'r', encoding='utf-8') as f:
+        episode_content = f.read()
+    
+    # Check if all scenes contain the positive prompt keywords
+    scenes = re.split(r'^## Scene \d+', episode_content, flags=re.MULTILINE)
+    scenes = [s for s in scenes if s.strip()]
+    scene_blocks = scenes[1:] if len(scenes) > 1 else scenes
+    
+    # Extract key terms from positive prompt (first 3 comma-separated terms)
+    key_terms = [t.strip() for t in positive_prompt.split(',')[:3] if t.strip()]
+    
+    missing_style = []
+    for i, scene in enumerate(scene_blocks, 1):
+        has_style = any(term.lower() in scene.lower() for term in key_terms)
+        if not has_style:
+            missing_style.append(i)
+    
+    if missing_style:
+        issues.append(f"Scenes missing style_guide prompt keywords: {missing_style[:5]}")
+    
+    return issues
+
+
 def check_foreshadowing_consistency(project_dir: str, episode_num: int) -> list:
     """Check if foreshadowing entries are properly tracked."""
     fs_path = os.path.join(project_dir, "foreshadowing.md")
@@ -116,6 +169,13 @@ def validate_episode(episode_path: str, project_dir: str, expected_mode: str,
     fs_issues = check_foreshadowing_consistency(project_dir, episode_num)
     if fs_issues:
         results["issues"].extend(fs_issues)
+    
+    # Style guide consistency
+    style_issues = check_style_guide_consistency(project_dir, episode_path)
+    if style_issues:
+        results["issues"].extend(style_issues)
+        # Style issues are warnings, not hard failures
+        # (unless strict mode is on - handled by caller)
     
     return results
 

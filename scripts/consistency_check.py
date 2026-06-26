@@ -118,6 +118,85 @@ def check_character_dialogue_style(project_dir: str, episode_path: str) -> list:
     return issues
 
 
+def get_style_guide_hash(project_dir: str) -> str:
+    """Get SHA256 hash of style_guide.md to detect changes across episodes."""
+    import hashlib
+    guide_path = os.path.join(project_dir, "style_guide.md")
+    if not os.path.exists(guide_path):
+        return ""
+    with open(guide_path, 'rb') as f:
+        return hashlib.sha256(f.read()).hexdigest()[:16]
+
+
+def check_style_consistency(project_dir: str, episodes: list) -> list:
+    """Check if all episodes use the same style_guide.md.
+    
+    Args:
+        project_dir: Project root directory
+        episodes: List of episode file paths
+    
+    Returns:
+        list of issue dicts
+    """
+    issues = []
+    guide_path = os.path.join(project_dir, "style_guide.md")
+    
+    if not os.path.exists(guide_path):
+        issues.append({
+            'type': 'missing_style_guide',
+            'message': 'style_guide.md not found - run init_project.py',
+            'severity': 'error'
+        })
+        return issues
+    
+    expected_hash = get_style_guide_hash(project_dir)
+    
+    # Check each episode's AI prompts against current style_guide
+    with open(guide_path, 'r', encoding='utf-8') as f:
+        guide_content = f.read()
+    
+    positive_match = re.search(r'## 正向提示词\s*\n(.+?)(?:\n##|$)', guide_content, re.DOTALL)
+    negative_match = re.search(r'## 反向提示词\s*\n(.+?)(?:\n##|$)', guide_content, re.DOTALL)
+    
+    if not positive_match or not negative_match:
+        issues.append({
+            'type': 'invalid_style_guide',
+            'message': 'style_guide.md format invalid',
+            'severity': 'error'
+        })
+        return issues
+    
+    current_positive = positive_match.group(1).strip()
+    key_terms = [t.strip() for t in current_positive.split(',')[:3] if t.strip()]
+    
+    for ep_path in episodes:
+        if not os.path.exists(ep_path):
+            continue
+        
+        with open(ep_path, 'r', encoding='utf-8') as f:
+            ep_content = f.read()
+        
+        scenes = re.split(r'^## Scene \d+', ep_content, flags=re.MULTILINE)
+        scenes = [s for s in scenes if s.strip()]
+        scene_blocks = scenes[1:] if len(scenes) > 1 else scenes
+        
+        missing_scenes = []
+        for i, scene in enumerate(scene_blocks, 1):
+            has_style = any(term.lower() in scene.lower() for term in key_terms)
+            if not has_style:
+                missing_scenes.append(i)
+        
+        if missing_scenes:
+            issues.append({
+                'type': 'style_mismatch',
+                'message': f"{os.path.basename(ep_path)}: {len(missing_scenes)} scenes missing style keywords",
+                'severity': 'warning',
+                'details': missing_scenes[:5]
+            })
+    
+    return issues
+
+
 def check_character_consistency(project_dir: str, episode_path: str) -> dict:
     """Run all character consistency checks."""
     results = {
@@ -143,6 +222,17 @@ def check_character_consistency(project_dir: str, episode_path: str) -> dict:
     # Check appearance consistency
     appearance_issues = check_appearance_consistency(project_dir, episode_path)
     results['issues'].extend(appearance_issues)
+    
+    # Check style consistency across all episodes
+    episodes_dir = os.path.join(project_dir, 'episodes')
+    if os.path.exists(episodes_dir):
+        all_episodes = sorted([
+            os.path.join(episodes_dir, f) for f in os.listdir(episodes_dir)
+            if f.startswith('ep') and f.endswith('.md')
+        ])
+        if all_episodes:
+            style_issues = check_style_consistency(project_dir, all_episodes)
+            results['issues'].extend(style_issues)
     
     # Count dialogues per character
     with open(episode_path, 'r', encoding='utf-8') as f:

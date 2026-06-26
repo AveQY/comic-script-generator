@@ -43,7 +43,7 @@
 | `created_at` | string | ✅ | 项目创建时间 |
 | `updated_at` | string | ✅ | 最后更新时间（每次生成新集后更新） |
 | `density_mode` | string | ✅ | 分镜密度模式：A/B/C |
-| `art_style` | string | ❌ | 艺术风格描述，用于 AI 绘图提示词 |
+| `art_style` | string | ✅ | 艺术风格描述，支持预设 key 或自定义描述，用于 AI 绘图提示词 |
 | `language` | string | ❌ | 剧本语言，默认 zh-CN |
 | `total_episodes` | number | ✅ | 计划总集数 |
 | `current_episode` | number | ✅ | 当前已完成的集数 |
@@ -55,6 +55,7 @@
 | `characters` | array | ❌ | 已创建的角色名列表 |
 | `foreshadowing_active` | array | ❌ | 当前未回收的伏笔描述 |
 | `notes` | string | ❌ | 项目备注，可记录特殊设定 |
+| `style_guide_file` | string | ❌ | 风格提示词文件路径，固定为 `style_guide.md` |
 
 ## source_config 字段说明（source=api 时使用）
 
@@ -94,6 +95,37 @@
   ],
   "notes": "用户偏好对话自然，减少文艺腔"
 }
+```
+
+## 艺术风格预设
+
+支持 5 个内置预设，也支持自定义描述词：
+
+| 预设 key | 中文名称 | 正向提示词（核心片段） | 反向提示词（核心片段） |
+|----------|----------|----------------------|----------------------|
+| `japanese-modern` | 现代日漫风 | modern manga style, bold lines, screentone, dynamic angles | photorealistic, soft lighting, watercolor |
+| `chinese-fine` | 国风细笔画 | Chinese fine brush painting, ink wash, flowing lines, negative space | modern digital art, photorealistic, cyberpunk |
+| `western-comic` | 美漫超级英雄风 | western comic book style, superhero, bold outlines, hard shadows | soft lighting, watercolor, pixelated |
+| `ghibli` | 吉卜力手绘水彩 | Ghibli style, hand-drawn watercolor, soft lighting, healing atmosphere | dark, horror, cyberpunk, photorealistic |
+| `pixel-retro` | 像素复古风 | pixel art, 8-bit, 16-bit, retro game style, pixelated | photorealistic, 3d render, smooth, high resolution |
+
+默认使用 `japanese-modern`。用户可通过 `--art-style` 传入预设 key 或完整自定义描述词。
+
+## style_guide.md 文件
+
+每个项目初始化时自动生成 `style_guide.md`，包含完整的正向/反向提示词模板。生成脚本时直接读取该文件，不再让 LLM 自由拼凑风格词。
+
+```markdown
+# 风格指南
+
+## 正向提示词
+masterpiece, best quality, <art_style>, cinematic lighting
+
+## 反向提示词
+worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
+
+## 风格说明
+<艺术风格的具体描述>
 ```
 
 ## 初始化脚本使用
