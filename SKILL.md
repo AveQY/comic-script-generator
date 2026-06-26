@@ -610,6 +610,8 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 - `scripts/consistency_check.py` — 角色一致性检查脚本，验证对话风格和外貌描述是否与档案一致
 - `scripts/check_update.py` — 更新检查脚本，检测远程仓库是否有新提交（网络不通时自动跳过）
 - `scripts/batch_generate.py` — 批量生成脚本，自动抓取热点并生成多个独立漫画项目
+- `references/batch-generation.md` — 批量生成架构设计与常见问题
+- `scripts/batch_generate.py` — 批量生成脚本，自动抓取热点并生成多个独立漫画项目
 
 ## 批量生成实现要点
 

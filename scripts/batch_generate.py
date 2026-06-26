@@ -178,7 +178,7 @@ def get_hermes_api_config() -> dict:
 
 
 def call_llm(base_url: str, api_key: str, model: str, prompt: str,
-             max_tokens: int = 8000, retries: int = 3, backoff: float = 2.0) -> str:
+             max_tokens: int = 8000, retries: int = 6, backoff: float = 2.0) -> str:
     """
     Call LLM API with retry logic.
     Retries on network errors, 5xx, and 429 (rate limit).
@@ -199,7 +199,7 @@ def call_llm(base_url: str, api_key: str, model: str, prompt: str,
                 "Authorization": f"Bearer {api_key}",
             })
 
-            with urllib.request.urlopen(req, timeout=120) as resp:
+            with urllib.request.urlopen(req, timeout=300) as resp:
                 data = json.loads(resp.read().decode("utf-8"))
                 choices = data.get("choices", [])
                 if choices:
@@ -361,7 +361,7 @@ def generate_episode(ep_num: int, outline: str, mode: str, project_name: str) ->
         "- 验证状态：待验证\n"
     ).format(ep_num=ep_num, outline=outline, mode_desc=mode_desc.get(mode, mode_desc["B"]), mode=mode)
 
-    ep_content = call_llm(base_url, api_key, model, ep_prompt, max_tokens=20000)
+    ep_content = call_llm(base_url, api_key, model, ep_prompt, max_tokens=12000)
     return ep_content or ""
 
 
@@ -386,7 +386,7 @@ def generate_outline_and_episodes(topic: str, project_name: str, mode: str,
 
         # Rate limiting: small delay between episodes to avoid hitting rate limits
         if ep_num > 1:
-            time.sleep(random.uniform(1.5, 3.0))
+            time.sleep(random.uniform(3.0, 5.0))
 
         ep_content = generate_episode(ep_num, outline, mode, project_name)
         if not ep_content:
@@ -508,7 +508,7 @@ def estimate_cost(mode: str, episodes: int, stories: int) -> dict:
     tokens_per_episode = {
         "A": 4000,   # shorter episodes
         "B": 8000,   # medium
-        "C": 20000,  # long episodes
+        "C": 12000,  # long episodes
     }
 
     ep_tokens = tokens_per_episode.get(mode, 8000)
@@ -668,7 +668,7 @@ def run_batch(count: int, mode: str, episodes: int, output_dir: str,
                 print("\n  Batch interrupted. Progress saved.")
                 break
         elif auto and i < count - 1:
-            delay = random.uniform(2.0, 5.0)
+            delay = random.uniform(10.0, 15.0)
             print("  Cooling down {:.1f}s before next story...".format(delay))
             time.sleep(delay)
 
