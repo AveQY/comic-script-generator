@@ -1,7 +1,7 @@
 ---
 name: comic-script-generator
 description: 根据大纲或热点生成漫画分镜稿，支持项目管理、角色档案、伏笔追踪
-version: 1.5.0
+version: 1.5.1
 tags: [creative, comic, screenplay, storyboard]
 ---
 
