@@ -1,0 +1,222 @@
+# AI 绘图提示词模板
+
+每个漫画 Panel 生成后，自动附带 AI 绘图提示词，适配主流图像生成工具。
+
+## 提示词来源（重要）
+
+**所有 Panel 的 AI 提示词必须以项目 `style_guide.md` 为准**，不得让 LLM 自由拼凑主画风、线条、上色、人物比例或负面提示词。生成流程：
+
+1. 读取 `style_guide.md` 的正向/反向提示词模板
+2. 将模板中的 `<art_style>` 替换为 `config.json` 的 `art_style` 值
+3. 注入每个 Panel 的画面描述、构图、光线和情绪
+
+## 提示词结构
+
+每个 Panel 的提示词分为两部分：
+
+1. **正向提示词（Positive Prompt）**：画面描述 + 风格标签（来自 style_guide.md）
+2. **反向提示词（Negative Prompt）**：需要避免的内容（来自 style_guide.md）
+
+## 格式规范
+
+### Stable Diffusion / ComfyUI 格式
+
+```markdown
+**AI 提示词**：
+
+正向：
+```
+masterpiece, best quality, cinematic lighting, [画面描述], [构图], [角色细节], [环境氛围], [艺术风格]
+```
+
+反向：
+```
+worst quality, low quality, blurry, deformed, bad anatomy, extra limbs, watermark, text, signature
+```
+```
+
+### Midjourney 格式
+
+```markdown
+**AI 提示词**（Midjourney）：
+
+```
+[画面描述], [构图], [艺术风格], cinematic lighting, masterpiece --ar 16:9 --stylize 250 --v 6
+```
+```
+
+### DALL-E / GPT-Image 格式
+
+```markdown
+**AI 提示词**：
+
+```
+[画面描述]，[构图]，[艺术风格]，电影级光影，高质量细节
+```
+```
+
+## 各分镜密度模式的提示词策略
+
+### 模式 A：对话多，镜头少
+
+**特点**：每个镜头承载大量对话信息，提示词侧重**角色表情+对话氛围**。
+
+**提示词模板**：
+```markdown
+**AI 提示词**：
+
+正向：
+```
+masterpiece, best quality, [角色名] [表情/动作], [环境], cinematic lighting, <style_guide.positive>, detailed face, [对话氛围关键词]
+```
+
+反向：
+```
+worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
+```
+```
+
+**示例**：
+```
+**AI 提示词**：
+
+正向：
+```
+masterpiece, best quality, 阿明 低头沉思, 教室窗外樱花飘落, cinematic lighting, <style_guide.positive>, detailed face, melancholic atmosphere
+```
+
+反向：
+```
+worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
+```
+```
+
+### 模式 B：一个对话对应一个镜头
+
+**特点**：每个镜头独立，提示词侧重**单镜头叙事**。
+
+**提示词模板**：
+```markdown
+**AI 提示词**：
+
+正向：
+```
+masterpiece, best quality, [镜头类型], [画面描述], cinematic lighting, <style_guide.positive>
+```
+
+反向：
+```
+worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
+```
+```
+
+**示例**：
+```
+**AI 提示词**：
+
+正向：
+```
+masterpiece, best quality, medium shot, 阿明转身看着小雨, 夕阳光晕笼罩, cinematic lighting, <style_guide.positive>
+```
+
+反向：
+```
+worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
+```
+```
+
+### 模式 C：一段对话多个镜头
+
+**特点**：镜头数量多，提示词侧重**连续动作/表情分解**。
+
+**提示词模板**：
+```markdown
+**AI 提示词**：
+
+正向：
+```
+masterpiece, best quality, [镜头类型], [单动作/表情], cinematic lighting, <style_guide.positive>, [连续镜头序号]
+```
+
+反向：
+```
+worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
+```
+```
+
+**示例**：
+```
+**AI 提示词**：
+
+正向：
+```
+masterpiece, best quality, close-up, 阿明眼神闪烁, cinematic lighting, manga style, shot 1 of 8
+```
+
+正向：
+```
+masterpiece, best quality, medium shot, 阿明转身, cinematic lighting, manga style, shot 2 of 8
+```
+
+正向：
+```
+masterpiece, best quality, close-up (小雨), 小雨脸颊微红, cinematic lighting, manga style, shot 3 of 8
+```
+```
+
+## 艺术风格预设
+
+根据故事类型自动推荐风格标签：
+
+| 故事类型 | 推荐艺术风格 |
+|----------|-------------|
+| 校园恋爱 | manga style, shoujo manga, soft pastel colors |
+| 科幻冒险 | sci-fi concept art, futuristic, neon lights |
+| 悬疑推理 | dark noir, high contrast, dramatic shadows |
+| 动作格斗 | dynamic angle, motion blur, action pose |
+| 奇幻冒险 | fantasy illustration, epic scale, magical lighting |
+| 日常治愈 | watercolor style, warm tones, cozy atmosphere |
+
+## 角色一致性建议
+
+在生成连续场景时，建议：
+
+1. **固定角色描述词**：每个角色创建固定的描述词模板，在所有场景中复用
+   ```
+   阿明：black short hair, slim build, school uniform, sharp but gentle eyes
+   小雨：shoulder-length ponytail, big eyes, dimples, white shirt + plaid skirt
+   ```
+
+2. **使用 LoRA/Embedding**：在 Stable Diffusion 中训练角色 LoRA，保持一致性
+
+3. **参考图固定**：每次生成时使用相同的角色参考图
+
+## 批量生成建议
+
+对于模式 C（150-250场景），建议：
+
+1. **按场次分组生成**：每 5-10 个场景为一组，保持上下文一致
+2. **先关键帧后补间**：先生成转折点/情感高潮的关键镜头，再生成过渡镜头
+3. **保持场景编号**：提示词中包含场景编号，方便后期排序
+
+
+## 漫画 Panel 约束
+
+AI 提示词只负责“这一个 Panel 怎么画”，不负责重新发明项目画风。
+
+允许每个 Panel 变化：人物动作、表情、构图、光线、场景物件、情绪氛围。
+禁止每个 Panel 变化：主画风、线条风格、上色方式、人物比例、角色固定外貌、负面提示词。
+
+推荐结构：
+
+```markdown
+**AI 提示词**：
+正向：
+```text
+<来自 style_guide.md 的固定正向风格>, <本 Panel 画面>, <构图>, <光线>, <情绪>
+```
+反向：
+```text
+<来自 style_guide.md 的固定反向提示词>
+```
+```
