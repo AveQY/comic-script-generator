@@ -1,6 +1,6 @@
 # comic-script-generator 线上阅读器部署记录
 
-用于未来维护 `https://comic-script-generator.YOUR_DOMAIN/reader` 时快速定位代码和部署关系。
+用于未来维护 `https://<your-reader-domain>/reader` 时快速定位代码和部署关系。
 
 ## 所属 skill
 
@@ -10,32 +10,39 @@
 
 ## 服务器部署
 
-服务器：服务器-叶 / AWS Lightsail `YOUR_SERVER_IP`
+服务器 IP：`<your-server-ip>`
 
 线上站点不是直接从 skill 目录运行，而是独立 Python API 项目：
 
-- 项目目录：`<user-home>/comic-script-generator-api`
-- Reader 页面：`<user-home>/comic-script-generator-api/reader.html`
-- 主程序：`<user-home>/comic-script-generator-api/app.py`
-- systemd 服务：`comic-api.service`
-- 运行命令：`<user-home>/comic-script-generator-api/venv/bin/python app.py`
-- 监听端口：`127.0.0.1:8081` / `0.0.0.0:8081`（以现场 `ss` 为准）
+- 项目目录：`/path/to/comic-script-generator-api`
+- Reader 页面：`/path/to/comic-script-generator-api/reader.html`
+- 主程序：`/path/to/comic-script-generator-api/app.py`
+- 运行命令：`python3 app.py`（前台）或后台运行
+- 监听端口：`127.0.0.1:8081`
 
 Nginx：
 
-- 配置文件：`/etc/nginx/sites-available/comic-script-generator`
-- enabled：`/etc/nginx/sites-enabled/comic-script-generator`
-- 域名：`comic-script-generator.YOUR_DOMAIN`
+- 配置文件：`/etc/nginx/sites-available/<your-reader-domain>`
+- enabled：`/etc/nginx/sites-enabled/<your-reader-domain>`
+- 域名：`<your-reader-domain>`
 - 反代：`location / { proxy_pass http://127.0.0.1:8081; }`
+- 已移除 default site，避免端口冲突
+- HTTPS：使用 certbot 申请证书，自动配置 443 跳转
 
 访问链路：
 
 ```text
-https://comic-script-generator.YOUR_DOMAIN/reader
-→ Nginx
+https://<your-reader-domain>/reader
+→ Nginx :80/:443
 → http://127.0.0.1:8081/reader
-→ <user-home>/comic-script-generator-api/reader.html
+→ /path/to/comic-script-generator-api/reader.html
 ```
+
+## DNS 配置要求
+
+- 在域名服务商处将 `<your-reader-domain>` 的 A 记录指向 `<your-server-ip>`
+- 如果使用 Cloudflare，需要关闭代理/CDN，改为 "DNS only" 模式，否则流量不会到达本机 Nginx
+- DNS 生效后访问 `http://<your-reader-domain>/reader` 验证
 
 ## 相关 skill 组合
 
@@ -60,5 +67,5 @@ ps -eo pid,user,cmd | grep -Ei 'comic|reader|nginx' | grep -v grep
 ## 维护提醒
 
 - 修改 skill 内容时，需要同步本机 Hermes 使用副本和 Desktop 开发副本。
-- 修改服务器 API/reader 时，注意它是独立项目 `<user-home>/comic-script-generator-api`，不是直接修改 Hermes skill 目录。
+- 修改服务器 API/reader 时，注意它是独立项目 `/path/to/comic-script-generator-api`，不是直接修改 Hermes skill 目录。
 - 如果要把脚本生成结果继续转成图或视频，优先加载 `story-renderer`，不要把图像渲染逻辑塞回 `comic-script-generator`。

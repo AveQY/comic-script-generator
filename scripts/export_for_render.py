@@ -79,15 +79,17 @@ def parse_panels(content: str):
 
 
 def load_style_guide(style_guide_path: str):
-    """Load positive/negative prompts from style_guide.md.
+    """Load positive/negative prompts plus optional consistency notes from style_guide.md.
 
     Supports both:
     - fenced blocks: **正向提示词**：```text ... ```
     - heading blocks: ## 正向提示词\n...
+    Also reads optional ## 角色视觉指纹 / ## 风格说明 for consistency locking.
     """
     text = read_text(style_guide_path)
     positive = ''
     negative = ''
+    consistency = ''
 
     # Fenced format used in some examples
     pos_m = re.search(r'正向(?:提示词)?[：:]\s*```(?:text)?\n(.*?)```', text, re.S)
@@ -112,7 +114,17 @@ def load_style_guide(style_guide_path: str):
         any_pos = re.search(r'```(?:text)?\n(.*?)```', text, re.S)
         if any_pos:
             positive = any_pos.group(1).strip()
-    return positive, negative
+    # Optional consistency locks: character fingerprints and style notes.
+    chunks = []
+    for heading in ('角色视觉指纹', '风格说明'):
+        m = re.search(r'##\s*' + re.escape(heading) + r'\s*\n(.+?)(?:\n##\s|\Z)', text, re.S)
+        if m:
+            clean = re.sub(r'\s+', ' ', m.group(1)).strip()
+            if clean:
+                chunks.append(clean)
+    consistency = ' '.join(chunks)
+
+    return positive, negative, consistency
 
 
 
@@ -134,6 +146,31 @@ def extract_positive_from_ai_prompt(ai_text: str) -> str:
         lines.append(s)
     return ', '.join(lines).strip()
 
+def clean_prompt_parts(*parts):
+    """Merge prompt fragments, remove negative terms accidentally copied into positive prompts."""
+    negative_markers = {
+        'photorealistic', '3d render', 'oil painting', 'messy anatomy', 'extra fingers',
+        'blurry', 'readable text', 'watermark', 'logo', 'worst quality', 'low quality',
+        'bad anatomy', 'deformed', 'extra limbs'
+    }
+    seen = set()
+    out = []
+    for part in parts:
+        for chunk in re.split(r'[,，]\s*', part or ''):
+            s = chunk.strip()
+            if not s:
+                continue
+            low = s.lower()
+            if low in negative_markers:
+                continue
+            if low.startswith(('反向', 'negative')):
+                continue
+            if low not in seen:
+                seen.add(low)
+                out.append(s)
+    return ', '.join(out)
+
+
 def render_output(project_name, episode_label, panels, positive_style, negative_style, panel_range):
     start = 1
     end = None
@@ -152,24 +189,11 @@ def render_output(project_name, episode_label, panels, positive_style, negative_
         visual = fields.get('画面', '')
         composition = fields.get('构图', '')
         ai = extract_positive_from_ai_prompt(fields.get('AI 提示词', ''))
-        bubble = fields.get('气泡', '')
+        # Keep dialogue out of the image-generation prompt. Text is overlaid later by overlay_comic_text.py
+        # so the model only draws clean manga art with empty bubble space.
         narration = fields.get('旁白', '')
-
-        if not narration and bubble:
-            bullets = []
-            for line in bubble.splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                m = re.match(r'^(.+?)（(.+?)）\s*:\s*"(.+)"$', line)
-                if m:
-                    bullets.append('- ' + m.group(1).strip() + '："' + m.group(3).strip() + '"')
-                else:
-                    m2 = re.match(r'^(.+?)\s*:\s*"(.+)"$', line)
-                    if m2:
-                        bullets.append('- ' + m2.group(1).strip() + '："' + m2.group(2).strip() + '"')
-            if bullets:
-                narration = '\n'.join(bullets)
+        if narration.strip() == '无':
+            narration = ''
 
         scene_index += 1
         scenes.append({
@@ -185,7 +209,7 @@ def render_output(project_name, episode_label, panels, positive_style, negative_
     return scenes
 
 
-def to_storyboard_md(project_name, episode_label, scenes, positive_style, negative_style):
+def to_storyboard_md(project_name, episode_label, scenes, positive_style, negative_style, consistency_style=''):
     lines = []
     lines.append(f"# {project_name} - {episode_label} 可渲染输入")
     lines.append('')
@@ -213,7 +237,16 @@ def to_storyboard_md(project_name, episode_label, scenes, positive_style, negati
         if positive_style:
             lines.append('**正向提示词**：')
             lines.append('```text')
-            lines.append(positive_style + ', ' + (scene.get('prompt') or scene.get('visual_description') or ''))
+            prompt = clean_prompt_parts(
+                positive_style,
+                consistency_style,
+                'CONSISTENCY LOCK: same character design, same face, same hairstyle, same outfit, same manga line style, same screentone density across all panels',
+                'single clean manga panel, no text inside the artwork, leave empty space for speech bubbles, readable sequential action',
+                scene.get('visual_description') or '',
+                scene.get('camera') or '',
+                scene.get('prompt') or ''
+            )
+            lines.append(prompt)
             lines.append('```')
             lines.append('')
         if negative_style:
@@ -243,13 +276,13 @@ def main():
         print('ERROR: no Page/Panel blocks found in episode', file=sys.stderr)
         sys.exit(1)
 
-    positive, negative = load_style_guide(args.style_guide)
+    positive, negative, consistency = load_style_guide(args.style_guide)
 
     episode_label = Path(args.episode).stem
     project_name = Path(args.project_dir).name
 
     scenes = render_output(project_name, episode_label, panels, positive, negative, args.panels)
-    md = to_storyboard_md(project_name, episode_label, scenes, positive, negative)
+    md = to_storyboard_md(project_name, episode_label, scenes, positive, negative, consistency)
 
     out = args.output
     if not out:

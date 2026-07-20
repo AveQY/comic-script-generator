@@ -20,5 +20,7 @@ Thumbs.db
 
 # Project specific
 config.json
+!config.example.json
 projects/
 hotspots/
+.update_check_cache.json

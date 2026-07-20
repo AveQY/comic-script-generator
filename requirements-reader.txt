@@ -1,0 +1,5 @@
+# comic-script-generator — Reader server dependencies
+# Install: pip install -r requirements-reader.txt
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+Pillow>=10.0.0

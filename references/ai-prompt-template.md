@@ -26,12 +26,12 @@
 
 正向：
 ```
-masterpiece, best quality, cinematic lighting, [画面描述], [构图], [角色细节], [环境氛围], [艺术风格]
+masterpiece, best quality, cinematic lighting, [画面描述], [构图], [角色细节], [环境氛围], [艺术风格], no text, no letters, leave empty space for speech bubbles
 ```
 
 反向：
 ```
-worst quality, low quality, blurry, deformed, bad anatomy, extra limbs, watermark, text, signature
+worst quality, low quality, blurry, deformed, bad anatomy, extra limbs, watermark, text, signature, no text, no letters
 ```
 ```
 
@@ -41,7 +41,7 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs, watermar
 **AI 提示词**（Midjourney）：
 
 ```
-[画面描述], [构图], [艺术风格], cinematic lighting, masterpiece --ar 16:9 --stylize 250 --v 6
+[画面描述], [构图], [艺术风格], cinematic lighting, masterpiece, --ar 16:9 --stylize 250 --v 6, --no text, letters, signature
 ```
 ```
 
@@ -51,7 +51,7 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs, watermar
 **AI 提示词**：
 
 ```
-[画面描述]，[构图]，[艺术风格]，电影级光影，高质量细节
+[画面描述]，[构图]，[艺术风格]，电影级光影，高质量细节。图片中不要出现文字。
 ```
 ```
 
@@ -67,13 +67,12 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs, watermar
 
 正向：
 ```
-masterpiece, best quality, [角色名] [表情/动作], [环境], cinematic lighting, <style_guide.positive>, detailed face, [对话氛围关键词]
+masterpiece, best quality, [角色名] [表情/动作], [环境], cinematic lighting, <style_guide.positive>, detailed face, [对话氛围关键词], no text, no letters, leave empty space for speech bubbles
 ```
 
 反向：
 ```
-worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
-```
+worst quality, low quality, blurry, deformed, bad anatomy, extra limbs, no text, no letters
 ```
 
 **示例**：
@@ -82,15 +81,17 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 
 正向：
 ```
-masterpiece, best quality, 阿明 低头沉思, 教室窗外樱花飘落, cinematic lighting, <style_guide.positive>, detailed face, melancholic atmosphere
+masterpiece, best quality, 阿明 低头沉思, 教室窗外樱花飘落, cinematic lighting, <style_guide.positive>, detailed face, melancholic atmosphere, no text, no letters, leave empty space for speech bubbles
 ```
 
 反向：
 ```
-worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
+worst quality, low quality, blurry, deformed, bad anatomy, extra limbs, no text, no letters
+```
 ```
 ```
 
+### 模式 B：一个对话对应一个镜头
 ### 模式 B：一个对话对应一个镜头
 
 **特点**：每个镜头独立，提示词侧重**单镜头叙事**。
@@ -101,13 +102,12 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 
 正向：
 ```
-masterpiece, best quality, [镜头类型], [画面描述], cinematic lighting, <style_guide.positive>
+masterpiece, best quality, [镜头类型], [画面描述], cinematic lighting, <style_guide.positive>, no text, no letters, leave empty space for speech bubbles
 ```
 
 反向：
 ```
-worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
-```
+worst quality, low quality, blurry, deformed, bad anatomy, extra limbs, no text, no letters
 ```
 
 **示例**：
@@ -116,12 +116,12 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 
 正向：
 ```
-masterpiece, best quality, medium shot, 阿明转身看着小雨, 夕阳光晕笼罩, cinematic lighting, <style_guide.positive>
+masterpiece, best quality, medium shot, 阿明转身看着小雨, 夕阳光晕笼罩, cinematic lighting, <style_guide.positive>, no text, no letters, leave empty space for speech bubbles
 ```
 
 反向：
 ```
-worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
+worst quality, low quality, blurry, deformed, bad anatomy, extra limbs, no text, no letters
 ```
 ```
 
@@ -135,13 +135,12 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 
 正向：
 ```
-masterpiece, best quality, [镜头类型], [单动作/表情], cinematic lighting, <style_guide.positive>, [连续镜头序号]
+masterpiece, best quality, [镜头类型], [单动作/表情], cinematic lighting, <style_guide.positive>, [连续镜头序号], no text, no letters, leave empty space for speech bubbles
 ```
 
 反向：
 ```
-worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
-```
+worst quality, low quality, blurry, deformed, bad anatomy, extra limbs, no text, no letters
 ```
 
 **示例**：
@@ -150,17 +149,18 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs
 
 正向：
 ```
-masterpiece, best quality, close-up, 阿明眼神闪烁, cinematic lighting, manga style, shot 1 of 8
+masterpiece, best quality, close-up, 阿明眼神闪烁, cinematic lighting, manga style, shot 1 of 8, no text, no letters, leave empty space for speech bubbles
 ```
 
 正向：
 ```
-masterpiece, best quality, medium shot, 阿明转身, cinematic lighting, manga style, shot 2 of 8
+masterpiece, best quality, medium shot, 阿明转身, cinematic lighting, manga style, shot 2 of 8, no text, no letters, leave empty space for speech bubbles
 ```
 
 正向：
 ```
-masterpiece, best quality, close-up (小雨), 小雨脸颊微红, cinematic lighting, manga style, shot 3 of 8
+masterpiece, best quality, close-up (小雨), 小雨脸颊微红, cinematic lighting, manga style, shot 3 of 8, no text, no letters, leave empty space for speech bubbles
+```
 ```
 ```
 
@@ -202,7 +202,7 @@ masterpiece, best quality, close-up (小雨), 小雨脸颊微红, cinematic ligh
 
 ## 漫画 Panel 约束
 
-AI 提示词只负责“这一个 Panel 怎么画”，不负责重新发明项目画风。
+AI 提示词只负责“这一个 Panel 怎么画”，不负责重新发明项目画风。**同时，AI 生图提示词只负责干净无字漫画画面：必须包含 `no text, no letters, leave empty space for speech bubbles`；中文对白、拟声由 `overlay_comic_text.py` 后期叠加，禁止指望生图模型生成中文气泡文字。**
 
 允许每个 Panel 变化：人物动作、表情、构图、光线、场景物件、情绪氛围。
 禁止每个 Panel 变化：主画风、线条风格、上色方式、人物比例、角色固定外貌、负面提示词。
@@ -213,10 +213,10 @@ AI 提示词只负责“这一个 Panel 怎么画”，不负责重新发明项�
 **AI 提示词**：
 正向：
 ```text
-<来自 style_guide.md 的固定正向风格>, <本 Panel 画面>, <构图>, <光线>, <情绪>
+<来自 style_guide.md 的固定正向风格>, <本 Panel 画面>, <构图>, <光线>, <情绪>, no text, no letters, leave empty space for speech bubbles
 ```
 反向：
 ```text
-<来自 style_guide.md 的固定反向提示词>
+<来自 style_guide.md 的固定反向提示词>, no text, no letters
 ```
 ```
