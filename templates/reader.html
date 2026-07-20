@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>番茄书架 · 漫画频道</title>
+  <style>
+    :root{
+      --primary:#ff5a3c;--primary2:#ff8a65;--accent:#ffb86b;
+      --bg:#f6f7fb;--bg-soft:#ffffff;--card:#ffffff;--card-2:#fafbfd;
+      --text:#1a1f2b;--sub:#5a6375;--muted:#9aa3b5;
+      --line:rgba(15,23,42,.07);--line-strong:rgba(15,23,42,.12);
+      --read:#fbf4e8;
+      --shadow:0 2px 8px rgba(15,23,42,.05),0 12px 28px rgba(15,23,42,.06);
+      --shadow-lg:0 4px 16px rgba(15,23,42,.08),0 24px 56px rgba(15,23,42,.10);
+      --radius:18px;
+      --gradient:linear-gradient(135deg,#ff5a3c 0%,#ff8a65 60%,#ffb86b 100%);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+      background:radial-gradient(1200px 800px at 80% -10%,rgba(255,90,60,.06),transparent 60%),
+                 radial-gradient(900px 700px at -10% 30%,rgba(255,138,101,.05),transparent 60%),
+                 var(--bg);
+      color:var(--text);-webkit-font-smoothing:antialiased}
+
+    /* ===== 全局隐藏滚动条（保留滚动功能） ===== */
+    html,body,*{scrollbar-width:none;-ms-overflow-style:none}
+    html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{width:0!important;height:0!important;display:none}
+
+    a{color:inherit;text-decoration:none}
+    button,input{font:inherit;color:inherit}
+    button{cursor:pointer;transition:transform .15s ease,box-shadow .2s ease,background .2s ease,color .15s ease,border-color .15s ease}
+    button:active{transform:scale(.97)}
+    img{display:block;max-width:100%}
+    .app{min-height:100vh;display:flex;flex-direction:column}
+
+    /* ===== 顶部导航（玻璃拟态） ===== */
+    .top{position:sticky;top:0;z-index:50;height:64px;padding:0 24px;display:flex;align-items:center;gap:20px;
+      background:rgba(255,255,255,.78);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
+      border-bottom:1px solid var(--line)}
+    .brand{font-weight:900;font-size:20px;letter-spacing:.3px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;cursor:pointer;filter:drop-shadow(0 2px 6px rgba(255,90,60,.25))}
+    .nav{display:flex;gap:4px}
+    .nav button{border:0;background:transparent;padding:9px 14px;border-radius:12px;color:var(--sub);font-weight:700;font-size:14px}
+    .nav button:hover{color:var(--text);background:rgba(15,23,42,.05)}
+    .nav button.active{background:var(--gradient);color:#fff;box-shadow:0 4px 14px rgba(255,90,60,.3)}
+    .search{flex:1;max-width:540px;position:relative}
+    .search input{width:100%;height:38px;border:1px solid var(--line-strong);border-radius:20px;background:#fff;padding:0 78px 0 40px;outline:none;transition:border-color .2s,box-shadow .2s}
+    .search input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(255,90,60,.15)}
+    .search:before{content:'🔍';position:absolute;left:14px;top:9px;opacity:.55}
+    .search button{position:absolute;right:4px;top:4px;height:30px;border:0;background:var(--gradient);color:#fff;border-radius:15px;padding:0 16px;font-weight:700;box-shadow:0 2px 8px rgba(255,90,60,.3)}
+
+    /* ===== 布局 ===== */
+    .layout{display:grid;grid-template-columns:250px 1fr;gap:22px;width:min(1380px,100%);margin:0 auto;padding:22px 24px}
+    .side{position:sticky;top:86px;height:calc(100vh - 108px);overflow:auto}
+    .main{min-width:0}
+
+    /* ===== 卡片/区块 ===== */
+    .panel,.section,.detail{
+      background:var(--card);
+      border:1px solid var(--line);border-radius:var(--radius);
+      box-shadow:var(--shadow);overflow:hidden}
+    .section{padding:22px;margin-bottom:22px}
+    .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px}
+    .section-head h2{margin:0;font-size:18px;font-weight:800;letter-spacing:.2px}
+    .section-head small{color:var(--muted);font-size:12px}
+    .side-title{padding:18px;font-weight:900;border-bottom:1px solid var(--line);font-size:15px;letter-spacing:.2px}
+
+    /* ===== 分类 ===== */
+    .cat{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;cursor:pointer;border-bottom:1px solid rgba(15,23,42,.04);color:var(--sub);font-weight:600;font-size:14px;transition:all .18s ease}
+    .cat:hover{color:var(--text);background:rgba(15,23,42,.04);padding-left:22px}
+    .cat.active{color:var(--primary);background:linear-gradient(90deg,rgba(255,90,60,.1),rgba(255,90,60,.02));border-left:3px solid var(--primary);padding-left:15px}
+    .cat.active b{color:var(--primary)}
+    .cat b{opacity:.4;font-weight:400}
+    .category-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+    .btn{border:1px solid var(--line-strong);background:#fff;color:var(--text);padding:9px 18px;border-radius:12px;font-weight:600;font-size:14px}
+    .btn:hover{background:var(--bg-soft);border-color:rgba(255,90,60,.4);color:var(--primary)}
+    .btn.primary{background:var(--gradient);border:0;color:#fff;box-shadow:0 4px 14px rgba(255,90,60,.3)}
+    .btn.primary:hover{box-shadow:0 6px 20px rgba(255,90,60,.4);transform:translateY(-1px);color:#fff}
+
+    /* ===== Hero ===== */
+    .hero{background:linear-gradient(135deg,#ff5a3c 0%,#ff8a65 50%,#ffb86b 100%);color:#fff;border-radius:24px;padding:38px 40px;margin-bottom:22px;box-shadow:0 20px 50px rgba(255,90,60,.25);position:relative;overflow:hidden}
+    .hero:before{content:'';position:absolute;right:-60px;top:-60px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.15);filter:blur(2px)}
+    .hero:after{content:'';position:absolute;right:60px;bottom:-90px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.1)}
+    .hero h1{margin:0 0 10px;font-size:30px;font-weight:900;letter-spacing:.5px;position:relative;z-index:1}
+    .hero p{margin:0;opacity:.95;line-height:1.7;position:relative;z-index:1;max-width:640px}
+    .hero.alt{background:linear-gradient(135deg,#6a5acd 0%,#8b5cf6 50%,#c084fc 100%);box-shadow:0 20px 50px rgba(139,92,246,.25)}
+
+    /* ===== 书卡 ===== */
+    .books{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+    .book{display:flex;gap:14px;padding:14px;background:var(--card-2);border:1px solid var(--line);border-radius:16px;cursor:pointer;transition:all .22s ease;position:relative;overflow:hidden}
+    .book:before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,90,60,0),rgba(255,90,60,.05));opacity:0;transition:opacity .25s}
+    .book:hover{transform:translateY(-3px);border-color:rgba(255,90,60,.4);box-shadow:0 12px 28px rgba(15,23,42,.1),0 0 0 1px rgba(255,90,60,.15);background:#fff}
+    .book:hover:before{opacity:1}
+    .cover{width:76px;height:108px;flex-basis:76px;border-radius:10px;background:linear-gradient(135deg,#fff1ed,#ffd8cc);display:flex;align-items:center;justify-content:center;font-size:32px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 10px rgba(255,90,60,.12)}
+    .binfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+    .btitle{font-weight:800;font-size:15px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .bdesc{color:var(--sub);font-size:12.5px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+    .tag{font-size:11px;color:var(--sub);background:rgba(15,23,42,.05);border:1px solid var(--line);padding:3px 8px;border-radius:8px;font-weight:600}
+
+    /* ===== 排行 ===== */
+    .rank{display:flex;flex-direction:column;gap:8px}
+    .rank-row{display:flex;align-items:center;gap:14px;padding:12px 14px;background:var(--card-2);border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:all .18s}
+    .rank-row:hover{border-color:rgba(255,90,60,.4);background:#fff;transform:translateX(4px);box-shadow:0 4px 12px rgba(15,23,42,.06)}
+    .rank-no{font-size:18px;font-weight:900;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.05);border-radius:10px;color:var(--sub);flex-shrink:0}
+    .rank-row:nth-child(1) .rank-no{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#fff;box-shadow:0 4px 10px rgba(255,215,0,.3)}
+    .rank-row:nth-child(2) .rank-no{background:linear-gradient(135deg,#c0c0c0,#808080);color:#fff}
+    .rank-row:nth-child(3) .rank-no{background:linear-gradient(135deg,#cd7f32,#8b4513);color:#fff}
+
+    /* ===== 详情 ===== */
+    .detail-top{display:flex;gap:22px;padding:24px;border-bottom:1px solid var(--line)}
+    .detail-top h1{margin:0 0 10px;font-size:24px;font-weight:900}
+    .detail-top .cover{width:120px;height:170px;flex-basis:120px;font-size:46px;border-radius:14px}
+    .meta{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 18px}
+    .meta span{font-size:12px;color:var(--sub);background:rgba(15,23,42,.05);padding:5px 11px;border-radius:8px;border:1px solid var(--line)}
+    .actions{display:flex;flex-wrap:wrap;gap:10px}
+    .tabs{display:flex;gap:4px;padding:0 24px;border-bottom:1px solid var(--line);background:rgba(250,251,253,.9);position:sticky;top:64px;z-index:10;backdrop-filter:blur(10px)}
+    .tabs button{border:0;background:transparent;padding:14px 16px;color:var(--sub);font-weight:700;font-size:14px;border-bottom:2px solid transparent;margin-bottom:-1px}
+    .tabs button:hover{color:var(--text)}
+    .tabs button.active{color:var(--primary);border-bottom-color:var(--primary)}
+    .tabbody{padding:24px}
+
+    /* ===== 章节 / 图片 ===== */
+    .chapters{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+    .chapter{padding:14px 16px;background:var(--card-2);border:1px solid var(--line);border-radius:12px;cursor:pointer;font-size:14px;line-height:1.6;transition:all .18s}
+    .chapter:hover{border-color:rgba(255,90,60,.4);background:#fff;box-shadow:0 4px 12px rgba(15,23,42,.05)}
+    .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+    .shot{background:var(--card-2);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .22s}
+    .shot:hover{transform:translateY(-3px);box-shadow:0 12px 24px rgba(15,23,42,.1);border-color:rgba(255,90,60,.3);background:#fff}
+    .shot img{width:100%;height:220px;object-fit:cover}
+    .shot .cap{padding:10px 12px;font-size:12px;color:var(--sub);word-break:break-all}
+    .pages{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+    .pageimg{background:var(--card-2);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .22s}
+    .pageimg:hover{transform:translateY(-3px);box-shadow:0 12px 24px rgba(15,23,42,.1);border-color:rgba(255,90,60,.3);background:#fff}
+    .pageimg img{width:100%;height:auto}
+    .pageimg .cap{padding:10px 12px;font-size:12px;color:var(--sub);word-break:break-all}
+    .compare{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .compare img{width:100%;border-radius:12px;border:1px solid var(--line)}
+    .doc{white-space:pre-wrap;line-height:1.85;color:var(--sub);font-size:14px;background:var(--card-2);padding:16px 18px;border-radius:12px;border:1px solid var(--line)}
+    .empty{padding:50px 20px;text-align:center;color:var(--muted);font-size:14px}
+    .mode-note{padding:30px;text-align:center;color:var(--muted);font-size:13.5px;line-height:1.8;background:rgba(255,138,101,.06);border:1px dashed rgba(255,138,101,.35);border-radius:12px}
+
+    /* ===== 阅读页 ===== */
+    .reader-page{display:none;min-height:100vh;background:var(--read)}
+    .reader-top{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(251,244,232,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.06);z-index:10}
+    .reader-top button{border:1px solid rgba(0,0,0,.1);background:#fff;padding:7px 14px;border-radius:10px;font-weight:600;color:#3d352c}
+    .reader-top strong{color:#3d352c;font-size:15px}
+    .reader-box{max-width:720px;margin:0 auto;padding:32px 28px 100px;font-size:18px;line-height:1.95;color:#3d352c;letter-spacing:.3px;font-family:"Noto Serif SC","Songti SC",serif}
+    .reader-box h1{font-size:24px;margin:24px 0 18px;color:#2a2419;text-align:center}
+    .reader-box p{margin:0 0 16px;text-indent:2em}
+    .reader-box p.dialog{color:#c2503a;text-indent:0}
+    .reader-box p.quote{border-left:3px solid #d4a574;padding-left:14px;color:#8a6d3b;font-style:italic;text-indent:0}
+    .reader-tools{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);padding:8px;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.12);border:1px solid rgba(0,0,0,.06)}
+    .reader-tools button{border:1px solid rgba(0,0,0,.08);background:#fff;padding:9px 16px;border-radius:10px;font-weight:600;font-size:13px;color:#3d352c}
+    .reader-tools button:hover{background:#fff5ea;border-color:var(--primary);color:var(--primary)}
+
+    /* ===== 骨架屏 ===== */
+    .skeleton{background:linear-gradient(90deg,#eef0f4 25%,#f7f8fb 50%,#eef0f4 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* ===== 移动端底栏 ===== */
+    .mobile-tab{display:none}
+
+    /* ===== 响应式 ===== */
+    @media(max-width:760px){
+      .top{height:56px;padding:0 14px;gap:10px}
+      .brand{font-size:17px}
+      .nav{display:none}
+      .search{max-width:none}
+      .search input{height:36px;font-size:16px}
+      .layout{display:block;padding:14px}
+      .side{display:none}
+      .hero{padding:26px 22px;border-radius:20px}
+      .hero h1{font-size:23px}
+      .section{padding:16px}
+      .books{grid-template-columns:1fr}
+      .cover{width:70px;height:98px;flex-basis:70px}
+      .detail-top{padding:18px;flex-direction:column;align-items:center;text-align:center}
+      .detail .cover{width:96px;height:134px;flex-basis:96px}
+      .tabs{top:56px;padding:0 14px}
+      .tabbody{padding:16px}
+      .chapters{grid-template-columns:1fr}
+      .gallery{grid-template-columns:repeat(2,1fr)}
+      .shot img{height:170px}
+      .compare{display:block}
+      .reader-box{font-size:17px;padding:24px 20px 40px}
+      .reader-tools{position:static;transform:none;left:auto;bottom:auto;margin:24px 16px 90px;justify-content:center;flex-wrap:wrap;background:rgba(255,255,255,.95);box-shadow:0 4px 14px rgba(0,0,0,.08)}
+      .mobile-tab{display:flex;position:fixed;left:0;right:0;bottom:0;height:58px;background:rgba(255,255,255,.92);backdrop-filter:blur(18px);border-top:1px solid var(--line);z-index:50}
+      .mobile-tab button{flex:1;border:0;background:transparent;font-size:11px;color:var(--sub);font-weight:700;padding:6px 0}
+      .mobile-tab button.active{color:var(--primary)}
+      body{padding-bottom:58px}
+      .reader-page body{padding-bottom:0}
+    }
+
+    /* === API 文档模态框 === */
+    .api-btn{border:1px solid var(--line-strong);background:#fff;color:var(--sub);padding:8px 14px;border-radius:18px;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .api-btn:hover{color:var(--primary);border-color:var(--primary);background:#fff5ea}
+    .api-modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+    .api-modal.open{display:flex}
+    .api-mask{position:absolute;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(4px)}
+    .api-dialog{position:relative;background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(15,23,42,.25);max-width:920px;width:100%;max-height:88vh;display:flex;flex-direction:column;overflow:hidden}
+    .api-head{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fafbfd 0%,#fff 100%)}
+    .api-head h2{margin:0;font-size:18px;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:8px}
+    .api-close{border:0;background:rgba(15,23,42,.05);color:var(--sub);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center}
+    .api-close:hover{background:rgba(255,90,60,.12);color:var(--primary)}
+    .api-body{flex:1;overflow-y:auto;padding:24px 28px;font-size:14px;line-height:1.7;color:var(--text)}
+    .api-body h3{font-size:14px;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin:24px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+    .api-body h3:first-child{margin-top:0}
+    .api-endpoint{margin-bottom:18px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:#fafbfd;transition:all .2s}
+    .api-endpoint:hover{border-color:rgba(255,90,60,.25);background:#fff;box-shadow:0 2px 8px rgba(15,23,42,.04)}
+    .api-route{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+    .api-method{background:var(--gradient);color:#fff;font-weight:800;font-size:11px;padding:3px 9px;border-radius:6px;letter-spacing:.5px;font-family:ui-monospace,monospace}
+    .api-path{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;font-weight:700;color:var(--text);background:rgba(15,23,42,.06);padding:3px 10px;border-radius:6px;word-break:break-all}
+    .api-desc{color:var(--sub);font-size:13px;margin:4px 0 8px}
+    .api-params{font-size:12.5px;color:var(--sub)}
+    .api-params strong{color:var(--text);font-weight:700}
+    .api-params code{background:rgba(255,90,60,.1);color:var(--primary);padding:1px 6px;border-radius:4px;font-family:ui-monospace,monospace;font-size:11.5px;font-weight:600}
+    .api-example{margin-top:8px;padding:8px 12px;background:#0f1115;color:#a8b0c0;border-radius:8px;font-family:ui-monospace,monospace;font-size:12px;overflow-x:auto;white-space:pre;user-select:all}
+    .api-note{margin-top:14px;padding:10px 14px;background:#fff5ea;border-left:3px solid var(--primary);border-radius:6px;font-size:12.5px;color:#8a6d3b}
+    .api-note strong{color:var(--primary)}
+    @media(max-width:760px){
+      .api-btn{padding:6px 10px;font-size:12px}
+      .api-dialog{max-height:92vh;border-radius:14px}
+      .api-body{padding:16px 18px;font-size:13px}
+      .api-example{font-size:11px;padding:6px 10px}
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="top">
+    <div class="brand" onclick="showHome()">🍅 番茄书架</div>
+    <nav class="nav">
+      <button id="navHome" class="active" onclick="showHome()">首页</button>
+      <button id="navCats" onclick="focusCats()">分类</button>
+      <button id="navShelf" onclick="showShelf()">书架</button>
+      <button id="navRank" onclick="showRank()">排行</button>
+      <button id="navRecent" onclick="showRecent()">最新</button>
+      <button id="navComic" onclick="showComic()">漫画</button>
+      <button id="navApi" onclick="showApiDoc()">📖 接口</button>
+    </nav>
+    <div class="search"><input id="q" placeholder="搜索书名/漫画/简介" onkeydown="if(event.key==='Enter')doSearch()"><button onclick="doSearch()">搜</button></div>
+  </header>
+  <div class="layout"><aside class="side"><div class="panel"><div class="side-title">分类频道</div><div id="cats"></div></div></aside><main class="main" id="main"><div class="empty">加载中...</div></main></div>
+  <div class="mobile-tab">
+    <button id="mHome" class="active" onclick="showHome()">🏠<br>首页</button>
+    <button id="mCats" onclick="focusCats()">📚<br>分类</button>
+    <button id="mShelf" onclick="showShelf()">⭐<br>书架</button>
+    <button id="mRank" onclick="showRank()">🏆<br>排行</button>
+    <button id="mRecent" onclick="showRecent()">🕐<br>最新</button>
+    <button id="mApi" onclick="showApiDoc()">📖<br>接口</button>
+    <button id="mComic" onclick="showComic()">🖼<br>漫画</button>
+  </div>
+</div>
+<div class="reader-page" id="readerPage"><div class="reader-top"><button onclick="closeReader()">‹ 返回</button><strong id="readerTitle">阅读</strong><button onclick="toggleReadTheme()">主题</button></div><article class="reader-box" id="readerBox"></article><div class="reader-tools"><button onclick="prevChapter()">上一章</button><button onclick="font(-1)">A-</button><button onclick="font(1)">A+</button><button onclick="nextChapter()">下一章</button></div></div>
+<script>
+let projects=[],cat='全部',current=null,novels=[],curIdx=0,fs=18,readDark=false,currentDetail=null,currentComicTab='episodes',io=null;
+const cats=['全部','都市','奇幻','悬疑','治愈','恋爱','职场','美食','末日','星际','民俗','推理','漫画'];
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function api(u){let r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(await r.text());return r.json()}
+function setNav(n){['Home','Cats','Shelf','Rank','Recent','Api','Comic'].forEach(x=>{let e=document.getElementById('nav'+x);if(e)e.classList.toggle('active',x===n)});['Home','Cats','Shelf','Rank','Recent','Api','Comic'].forEach(x=>{let e=document.getElementById('m'+x);if(e)e.classList.toggle('active',x===n)})}
+function isComic(p){let m=String(p.content_mode||p.category||'').toLowerCase();return m.includes('comic')||m.includes('漫画')||(p.rendered_images||0)>0||(p.comic_pages||0)>0||((p.light_novels||0)===0&&(p.episodes||0)>0)}
+function isNovel(p){return !isComic(p)}
+function categoryOf(p){let s=(p.category||p.description||p.name||p.title||'');if(cat==='全部')return true;if(cat==='漫画')return isComic(p);return s.includes(cat)||String(p.name||'').includes(cat)||String(p.title||'').includes(cat)}
+function icon(p){let s=p.category||p.name||'';if(isComic(p))return '🖼';if(s.includes('书店'))return '📚';if(s.includes('便利'))return '🏪';if(s.includes('美食'))return '🍲';if(s.includes('星际'))return '🚀';if(s.includes('民俗'))return '🏮';return '📖'}
+function coverHtml(p, cls='cover'){let url=p.cover_url||p.meta?.cover_url||'';return url?`<div class="${cls}"><img loading="lazy" src="${esc(url)}" alt="${esc(p.name||p.title||'cover')}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"></div>`:`<div class="${cls}">${icon(p)}</div>`}
+function renderCats(){document.getElementById('cats').innerHTML=cats.map(c=>`<div class="cat ${cat===c?'active':''}" onclick="cat='${c}';renderCats();${c==='漫画'?'showComic()':'showHome()'}"><span>${c}</span><b>›</b></div>`).join('')}
+function card(p, mode){let comic=isComic(p);let open=comic||mode==='comic'?`openComic('${encodeURIComponent(p.name)}')`:`openBook('${encodeURIComponent(p.name)}')`;let unit=comic?'集':'章';return `<div class="book" onclick="${open}">${coverHtml(p)}<div class="binfo"><div class="btitle">${esc(p.title||p.name)}</div><div class="bdesc">${esc(p.description||'暂无简介')}</div><div class="tags"><span class="tag">${comic?'漫画':esc(p.category||p.content_mode||'小说')}</span><span class="tag">${p.episodes||0}${unit}</span>${comic?`<span class="tag">${p.rendered_images||0}图</span><span class="tag">${p.comic_pages||0}页</span>`:`<span class="tag">${p.status||'连载'}</span>`}</div></div></div>`}
+async function load(){let d=await api('/projects');projects=d.projects||[];renderCats();showHome()}
+function showHome(){setNav('Home');let list=projects.filter(isNovel).filter(categoryOf);let comics=projects.filter(isComic);document.getElementById('main').innerHTML=`<section class="hero"><h1>好故事，从书架开始</h1><p>首页保持小说网站结构；漫画频道已重新挂回顶部与底部导航。当前 ${projects.length} 个项目，小说 ${list.length} 本，漫画 ${comics.length} 部。</p></section><section class="section"><div class="section-head"><h2>📚 推荐书架</h2><small>${list.length}本</small></div><div class="books">${list.map(p=>card(p,'novel')).join('')||'<div class="empty">暂无小说作品</div>'}</div></section><section class="section"><div class="section-head"><h2>🖼 漫画频道入口</h2><button class="btn primary" onclick="showComic()">进入漫画</button></div><div class="books">${comics.slice(0,4).map(p=>card(p,'comic')).join('')||'<div class="mode-note">漫画频道已恢复；当前项目目录没有漫画项目，所以这里暂为空。后续新生成漫画项目后会自动展示项目卡片、分集稿、渲染图、漫画页和图片对照稿。</div>'}</div></section><section class="section"><div class="section-head"><h2>🕘 最近更新</h2><small>按更新时间</small></div><div class="rank">${projects.slice(0,8).map((p,i)=>rankRow(p,i)).join('')}</div></section>`}
+function rankRow(p,i){let open=isComic(p)?`openComic('${encodeURIComponent(p.name)}')`:`openBook('${encodeURIComponent(p.name)}')`;return `<div class="rank-row" onclick="${open}"><div class="rank-no">${i+1}</div><div><b>${esc(p.title||p.name)}</b><div style="color:var(--muted);font-size:12px;margin-top:4px">${isComic(p)?'漫画':esc(p.category||'小说')} · ${p.episodes||0}${isComic(p)?'集':'章'}</div></div></div>`}
+function showRank(){setNav('Rank');document.getElementById('main').innerHTML=`<section class="section"><div class="section-head"><h2>🏆 阅读排行榜</h2><small>按章节/图片排序</small></div><div class="rank">${projects.slice().sort((a,b)=>((b.episodes||0)+(b.rendered_images||0))-((a.episodes||0)+(a.rendered_images||0))).map((p,i)=>rankRow(p,i)).join('')}</div></section>`}
+
+/* === 最新更新 === */
+function relTime(ts){
+  if(!ts) return '';
+  let now = Date.now()/1000, diff = now - ts;
+  if(diff < 60) return '刚刚';
+  if(diff < 3600) return Math.floor(diff/60) + ' 分钟前';
+  if(diff < 86400) return Math.floor(diff/3600) + ' 小时前';
+  if(diff < 86400*7) return Math.floor(diff/86400) + ' 天前';
+  if(diff < 86400*30) return Math.floor(diff/86400/7) + ' 周前';
+  if(diff < 86400*365) return Math.floor(diff/86400/30) + ' 个月前';
+  return Math.floor(diff/86400/365) + ' 年前';
+}
+function recentRow(p,i){
+  let comic = isComic(p);
+  let open = comic ? `openComic('${encodeURIComponent(p.name)}')` : `openBook('${encodeURIComponent(p.name)}')`;
+  let rel = relTime(p.last_updated);
+  let iso = p.last_updated_iso ? new Date(p.last_updated_iso).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+  let kind = comic ? '漫画' : (p.category||p.content_mode||'小说');
+  let unit = comic ? '集' : '章';
+  return `<div class="rank-row" onclick="${open}">
+    <div class="rank-no">${i+1}</div>
+    <div style="flex:1">
+      <b>${esc(p.title||p.name)}</b>
+      <div style="color:var(--muted);font-size:12px;margin-top:4px">${esc(kind)} · ${p.episodes||0}${unit}${comic?` · ${p.rendered_images||0}图`:''}</div>
+    </div>
+    <div style="text-align:right;color:var(--sub);font-size:12px;white-space:nowrap">
+      <div style="color:var(--primary);font-weight:700">🕐 ${rel}</div>
+      <div style="opacity:.65;margin-top:2px">${iso}</div>
+    </div>
+  </div>`;
+}
+async function showRecent(){
+  setNav('Recent');
+  let main = document.getElementById('main');
+  main.innerHTML = '<div class="empty">加载中…</div>';
+  try{
+    let d = await api('/projects/by-update?limit=100');
+    let list = d.projects||[];
+    main.innerHTML = `<section class="section">
+      <div class="section-head">
+        <h2>🕐 最新更新</h2>
+        <small>按内容文件最后修改时间排序 · 共 ${list.length} 部</small>
+      </div>
+      <div class="rank">${list.map((p,i)=>recentRow(p,i)).join('')||'<div class="empty">暂无项目</div>'}</div>
+    </section>`;
+  }catch(e){
+    main.innerHTML = '<div class="empty">加载失败：'+esc(e.message||e)+'</div>';
+  }
+}
+function showShelf(){setNav('Shelf');let list=projects.filter(isNovel);document.getElementById('main').innerHTML=`<section class="hero"><h1>我的书架</h1><p>这里展示小说项目；漫画内容请进入“漫画”频道。</p></section><div class="books">${list.map(p=>card(p,'novel')).join('')||'<div class="empty">暂无小说作品</div>'}</div>`}
+function focusCats(){setNav('Cats');document.getElementById('main').innerHTML=`<section class="section"><div class="section-head"><h2>📚 分类频道</h2></div><div class="category-row">${cats.map(c=>`<button class="btn ${cat===c?'primary':''}" onclick="cat='${c}';renderCats();${c==='漫画'?'showComic()':'showHome()'}">${c}</button>`).join('')}</div><div class="books">${projects.filter(categoryOf).map(p=>card(p)).join('')||'<div class="empty">暂无作品</div>'}</div></section>`}
+function showComic(){setNav('Comic');cat='漫画';renderCats();let list=projects.filter(isComic);document.getElementById('main').innerHTML=`<section class="hero alt"><h1>漫画频道</h1><p>展示漫画项目卡片、分集稿件、渲染图、漫画页与图片对照稿；首页仍保留小说站结构。</p></section><section class="section"><div class="section-head"><h2>🖼 漫画项目</h2><small>${list.length}部</small></div><div class="books">${list.map(p=>card(p,'comic')).join('')||'<div class="empty">漫画频道已恢复，但当前 /root/comic-projects/projects 下没有漫画项目。重新生成漫画后会自动出现在这里。</div>'}</div></section>`}
+function doSearch(){let q=document.getElementById('q').value.trim();let list=projects.filter(p=>String((p.name||'')+(p.title||'')+(p.description||'')+(p.category||'')).includes(q));document.getElementById('main').innerHTML=`<section class="section"><div class="section-head"><h2>🔍 搜索：${esc(q||'全部')}</h2><small>${list.length}条</small></div><div class="books">${list.map(p=>card(p)).join('')||'<div class="empty">没有结果</div>'}</div></section>`}
+async function openBook(name){current=decodeURIComponent(name);let d=await api('/projects/'+encodeURIComponent(current));let l=await api('/light-novels?project='+encodeURIComponent(current));novels=l.novels||[];document.getElementById('main').innerHTML=`<div class="detail"><div class="detail-top">${coverHtml(d.meta||d)}<div><h1>${esc(d.meta?.title||d.name)}</h1><p style="color:var(--sub);line-height:1.7">${esc(d.meta?.description||'')}</p><div class="meta"><span>${esc(d.meta?.category||'小说')}</span><span>${novels.length}章</span><span>${esc(d.config?.generation_status||d.config?.status||'连载')}</span></div><div class="actions"><button class="btn primary" onclick="readChapter(0)">开始阅读</button><button class="btn" onclick="showDetailTab('catalog')">查看目录</button><button class="btn" onclick="showDetailTab('scripts')">分镜</button><button class="btn" onclick="showHome()">返回首页</button></div></div></div><div class="tabs"><button id="tCatalog" class="active" onclick="showDetailTab('catalog')">目录</button><button id="tIntro" onclick="showDetailTab('intro')">简介</button><button id="tDocs" onclick="showDetailTab('docs')">资料</button><button id="tScripts" onclick="showDetailTab('scripts')">分镜</button></div><div class="tabbody" id="tabbody"></div></div>`;showDetailTab('catalog')}
+function showDetailTab(t){['Catalog','Intro','Docs','Scripts'].forEach(x=>{let e=document.getElementById('t'+x);if(e)e.classList.toggle('active',t.toLowerCase()===x.toLowerCase())});let b=document.getElementById('tabbody');if(t==='catalog')b.innerHTML=`<div class="chapters">${novels.map((n,i)=>`<div class="chapter" onclick="readChapter(${i})">${esc(n.title||n.file)}<br><small style="color:var(--muted)">${n.chars||0} 字节</small></div>`).join('')||'<div class="empty">暂无章节</div>'}</div>`;else if(t==='intro')b.innerHTML=`<div class="doc">${esc((projects.find(p=>p.name===current)||{}).description||'暂无简介')}</div>`;else if(t==='scripts')loadScripts();else b.innerHTML='<div class="doc">项目资料请在后端 summary / characters / foreshadowing 中查看。</div>'}
+
+async function loadScripts(){let b=document.getElementById('tabbody');b.innerHTML='<div class="empty">加载中…</div>';try{let d=await api('/scripts?project='+encodeURIComponent(current));window.scriptsList=d.scripts||[];if(!window.scriptsList.length){b.innerHTML='<div class="empty">暂无分镜脚本。<br><small>使用转换脚本生成</small></div>';return}b.innerHTML=`<div style="margin-bottom:12px;color:var(--sub);font-size:13px">共 ${d.count} 个分镜脚本</div><div class="chapters">${window.scriptsList.map((s,i)=>`<div class="chapter" style="cursor:default;display:flex;align-items:center;gap:8px"><span style="flex:1">${esc(s.title||s.file)}<br><small style="color:var(--muted)">${s.chars} 字节 ${s.source_ln?'· 源自 '+s.source_ln:''}</small></span><button class="btn" style="padding:4px 12px;font-size:12px" onclick="viewScript(${i})">查看</button><button class="btn" style="padding:4px 12px;font-size:12px" onclick="copyScript('${esc(s.file)}')" id="cpy_${esc(s.file).replace(/[^a-zA-Z0-9]/g,'_')}">复制</button></div>`).join('')}</div>`}catch(e){b.innerHTML=`<div class="empty">加载失败: ${esc(e.message||e)}</div>`}}
+
+async function viewScript(idx){let b=document.getElementById('tabbody');let list=window.scriptsList||[];if(idx<0||idx>=list.length)return;let file=list[idx].file;b.innerHTML='<div class="empty">加载中…</div>';try{let d=await api('/script?project='+encodeURIComponent(current)+'&file='+encodeURIComponent(file));let nav='';if(idx>0)nav+=`<button class="btn" onclick="viewScript(${idx-1})" style="margin-right:4px">◀ 上一个</button>`;nav+=`<button class="btn" onclick="showDetailTab('scripts')">← 返回列表</button>`;if(idx<list.length-1)nav+=`<button class="btn" onclick="viewScript(${idx+1})" style="margin-left:4px">下一个 ▶</button>`;nav+=`<button class="btn primary" style="margin-left:8px" onclick="copyScriptContent(\`${esc(d.content)}\`)">📋 复制全部</button>`;b.innerHTML=`<div style="margin-bottom:8px;color:var(--sub);font-size:12px">${idx+1}/${list.length} · ${esc(file)}</div><div class="doc" style="white-space:pre-wrap;font-family:monospace;font-size:13px;line-height:1.8;background:#fff;padding:24px;border-radius:12px;border:1px solid var(--line)">${esc(d.content)}</div><div style="margin-top:12px;text-align:center">${nav}</div>`}catch(e){b.innerHTML=`<div class="empty">加载失败: ${esc(e.message||e)}</div>`}}
+
+async function copyScript(file){let btn=document.getElementById('cpy_'+file.replace(/[^a-zA-Z0-9]/g,'_'));try{let d=await api('/script?project='+encodeURIComponent(current)+'&file='+encodeURIComponent(file));copyText(d.content);btn.textContent='✅ 已复制';setTimeout(()=>btn.textContent='复制',2000)}catch(e){btn.textContent='❌ 失败';setTimeout(()=>btn.textContent='复制',2000)}}
+
+function copyScriptContent(t){copyText(t);let b=document.querySelector('.tabbody button.primary');if(b){let orig=b.textContent;b.textContent='✅ 已复制';setTimeout(()=>b.textContent=orig,2000)}}
+
+function copyText(t){var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta)}
+async function openComic(name){current=decodeURIComponent(name);currentDetail=await api('/projects/'+encodeURIComponent(current));let d=currentDetail;document.getElementById('main').innerHTML=`<div class="detail"><div class="detail-top">${coverHtml(d.meta||d)}<div><h1>${esc(d.meta?.title||d.name)}</h1><p style="color:var(--sub);line-height:1.7">${esc(d.meta?.description||'')}</p><div class="meta"><span>漫画</span><span>${d.stats?.episodes||0}集</span><span>${d.stats?.total_panels||0}格</span><span>${d.images?.length||0}渲染图</span><span>${d.comic_pages?.length||0}漫画页</span></div><div class="actions"><button class="btn primary" onclick="showComicTab('episodes')">看分集</button><button class="btn" onclick="showComicTab('images')">渲染图</button><button class="btn" onclick="showComic()">返回漫画频道</button></div></div></div><div class="tabs"><button id="cEpisodes" class="active" onclick="showComicTab('episodes')">分集稿件</button><button id="cImages" onclick="showComicTab('images')">渲染图</button><button id="cPages" onclick="showComicTab('pages')">漫画页</button><button id="cCompare" onclick="showComicTab('compare')">图片对照稿</button><button id="cDocs" onclick="showComicTab('docs')">资料</button></div><div class="tabbody" id="comicBody"></div></div>`;showComicTab('episodes')}
+function setComicTab(t){['Episodes','Images','Pages','Compare','Docs'].forEach(x=>{let e=document.getElementById('c'+x);if(e)e.classList.toggle('active',t.toLowerCase()===x.toLowerCase())});currentComicTab=t}
+function showComicTab(t){if(!currentDetail)return;setComicTab(t);let d=currentDetail,b=document.getElementById('comicBody');if(t==='episodes'){b.innerHTML=`<div class="chapters">${(d.episodes||[]).map(ep=>`<div class="chapter" onclick="loadEpisode('${esc(ep.file)}')"><b>${esc(ep.title||ep.file)}</b><br><small style="color:var(--muted)">${ep.pages||0}页 · ${ep.panels||0}格 · ${ep.chars||0}字节</small><p style="color:var(--sub)">${esc(ep.hook||ep.excerpt||'')}</p></div>`).join('')||'<div class="empty">暂无分集稿件</div>'}</div>`}else if(t==='images'){b.innerHTML=`<div class="gallery">${(d.images||[]).map((img,i)=>imageCard(img,i)).join('')||'<div class="empty">暂无渲染图</div>'}</div>`;bindImages()}else if(t==='pages'){b.innerHTML=`<div class="pages">${(d.comic_pages||[]).map((img,i)=>`<div class="pageimg"><img loading="lazy" data-src="${thumbUrl(img.file,520,760,'inside')}" alt="page ${i+1}" onclick="openImageCompare('${esc(img.file)}')"><div class="cap">第 ${i+1} 页<br>${esc(img.file)}</div></div>`).join('')||'<div class="empty">暂无合成漫画页</div>'}</div>`;bindImages()}else if(t==='compare'){b.innerHTML='<div class="mode-note">点击“渲染图”或“漫画页”里的图片，会在这里显示图片与对应分集稿内容，方便图文对比。</div>'}else{let docs=d.docs||{};b.innerHTML=Object.keys(docs).map(k=>`<h3>${esc(k)}</h3><div class="doc">${esc(docs[k].content||'')}</div>`).join('')||'<div class="empty">暂无资料</div>'}}
+function imageCard(img,i){return `<div class="shot"><img loading="lazy" class="lazy-img skeleton" data-src="${thumbUrl(img.file,360,460,'cover')}" alt="image ${i+1}" onclick="openImageCompare('${esc(img.file)}')"><div class="cap">#${i+1}<br>${esc(img.file)}</div></div>`}
+function thumbUrl(path,w,h,fit){return `/thumb?project=${encodeURIComponent(current)}&path=${encodeURIComponent(path)}&width=${w}&height=${h}&fit=${fit||'cover'}`}
+function bindImages(){if(io)io.disconnect();io=new IntersectionObserver(entries=>{entries.forEach(en=>{if(en.isIntersecting){let img=en.target;let src=img.dataset.src;if(src){img.src=src;img.onload=()=>img.classList.remove('skeleton');delete img.dataset.src}io.unobserve(img)}})},{rootMargin:'300px'});document.querySelectorAll('img[data-src]').forEach(img=>io.observe(img))}
+async function loadEpisode(file){let d=await api('/episode?project='+encodeURIComponent(current)+'&file='+encodeURIComponent(file));document.getElementById('comicBody').innerHTML=`<h3>${esc(file)}</h3><div class="doc">${esc(d.content||'')}</div>`}
+async function openImageCompare(path){if(!currentDetail)return;setComicTab('compare');let b=document.getElementById('comicBody');let eps=currentDetail.episodes||[];let ep=guessEpisode(path,eps);let txt='';if(ep){try{let d=await api('/episode?project='+encodeURIComponent(current)+'&file='+encodeURIComponent(ep.file));txt=d.content||''}catch(e){txt='读取分集稿失败：'+e}}b.innerHTML=`<div class="compare"><div><img src="/file?project=${encodeURIComponent(current)}&path=${encodeURIComponent(path)}" alt="${esc(path)}"><p style="color:var(--muted);word-break:break-all">${esc(path)}</p></div><div><h3>图片对照稿 ${ep?esc(ep.file):''}</h3><div class="doc">${esc(txt||'未能自动匹配分集稿；可从“分集稿件”打开查看。')}</div></div></div>`}
+function guessEpisode(path,eps){let m=path.match(/ep(\d{3})|scene_(\d+)/i);if(m&&m[1])return eps.find(e=>e.file.includes('ep'+m[1]))||eps[0];return eps[0]}
+async function readChapter(i){if(i<0||i>=novels.length)return;curIdx=i;let n=novels[i];let txt=await (await fetch(n.url,{cache:'no-store'})).text();document.getElementById('app').style.display='none';document.getElementById('readerPage').style.display='block';document.getElementById('readerTitle').textContent=n.title||n.file;document.getElementById('readerBox').style.fontSize=fs+'px';document.getElementById('readerBox').innerHTML=novelHtml(txt);window.scrollTo(0,0)}
+function novelHtml(md){let h='',lines=md.split('\n');for(let line of lines){line=line.trim();if(!line||line==='---'||line.startsWith('<!--'))continue;if(line.startsWith('# ')){h+=`<h1>${esc(line.replace(/^#\s*/,''))}</h1>`;continue}if(line.startsWith('>')){h+=`<p class="quote">${esc(line.replace(/^>\s*/,''))}</p>`;continue}if(line.startsWith('「'))h+=`<p class="dialog">${esc(line)}</p>`;else h+=`<p>${esc(line)}</p>`}return h}
+function closeReader(){document.getElementById('readerPage').style.display='none';document.getElementById('app').style.display='flex'}
+function prevChapter(){readChapter(curIdx-1)}function nextChapter(){readChapter(curIdx+1)}function font(d){fs=Math.max(15,Math.min(26,fs+d));document.getElementById('readerBox').style.fontSize=fs+'px'}
+function toggleReadTheme(){readDark=!readDark;document.documentElement.style.setProperty('--read',readDark?'#1d1b19':'#fbf4e8');document.querySelector('.reader-box').style.color=readDark?'#ddd':'#3d352c'}
+
+/* === API 文档（独立视图） === */
+function showApiDoc(){
+  setNav('Api');
+  document.getElementById('main').innerHTML = `<section class="section">
+    <div class="section-head">
+      <h2>📖 Reader API 文档</h2>
+      <small>共 14 个接口 · 浅色极简风</small>
+    </div>
+
+    <div class="api-note">
+      <strong>基础信息：</strong>所有 API 均以 <code>/</code> 开头，默认端口 <code>8081</code>。
+      如启用 <code>COMIC_READER_API_KEY</code>，所有请求需附加 <code>?api_key=&lt;KEY&gt;</code> 或请求头 <code>X-API-Key: &lt;KEY&gt;</code>。
+    </div>
+
+    <h3>📚 项目（Projects）</h3>
+
+    <div class="api-endpoint">
+      <div class="api-route"><span class="api-method">GET</span><span class="api-path">/projects</span></div>
+      <div class="api-desc">列出所有项目（含漫画 / 轻小说），支持搜索与分页。</div>
+      <div class="api-params">
+        <strong>参数：</strong>
+        <code>search</code> 项目名模糊匹配 ·
+        <code>page</code> 页码（默认 1）·
+        <code>page_size</code> 每页数量（默认 20，最大 100）
+      </div>
+      <div class="api-example">curl 'http://localhost:8081/projects?page=1&page_size=20'</div>
+    </div>
+
+    <div class="api-endpoint">
+      <div class="api-route"><span class="api-method">GET</span><span class="api-path">/projects/by-update</span></div>
+      <div class="api-desc">按"内容文件最后修改时间"降序列出项目（最新优先）。扫描 <code>*.md</code>（含 episodes/light_novel）和所有渲染图的 mtime 取最大值。</div>
+      <div class="api-params">
+        <strong>参数：</strong>
+        <code>limit</code> 返回条数（默认 50，最大 200）·
+        <code>content_mode</code> 过滤类型：<code>comic</code> 仅漫画 / <code>light_novel</code> 仅小说 / 省略为全部
+      </div>
+      <div class="api-example">curl 'http://localhost:8081/projects/by-update?limit=20&content_mode=light_novel'</div>
+    </div>
+
+    <div class="api-endpoint">
+      <div class="api-route"><span class="api-method">GET</span><span class="api-path">/projects/{name}</span></div>
+      <div class="api-desc">获取单个项目详情：配置、统计、分集列表、图片画廊、轻小说章节。</div>
+      <div class="api-params"><strong>路径参数：</strong><code>name</code> 项目目录名（支持中文，需 URL 编码）</div>
+      <div class="api-example">curl 'http://localhost:8081/projects/%E6%88%91%E7%9A%84AI%E8%80%81%E5%A6%88'</div>
+    </div>
+
+    <div class="api-endpoint">
+      <div class="api-route"><span class="api-method">GET</span><span class="api-path">/project/{name}</span></div>
+      <div class="api-desc"><code>/projects/{name}</code> 的别名（兼容单数形式调用）。</div>
+    </div>
+
+    <h3>📄 内容获取</h3>
+
+    <div class="api-endpoint">
+      <div class="api-route"><span class="api-method">GET</span><span class="api-path">/episode</span></div>
+      <div class="api-desc">获取漫画分集正文（Markdown 原文）。</div>
+      <div class="api-params">
+        <strong>参数：</strong>
+        <code>project</code> 项目名（必填）·
+        <code>file</code> 分集文件相对路径，如 <code>episodes/ep001_xxx.md</code>（必填）
+      </div>
+      <div class="api-example">curl 'http://localhost:8081/episode?project=Demo&file=episodes/ep001_start.md'</div>
+    </div>
+
+    <div class="api-endpoint">
+      <div class="api-route"><span class="api-method">GET</span><span class="api-path">/doc</span></div>
+      <div class="api-desc">获取项目元数据文档（summary.md / characters.md / foreshadowing.md / style_guide.md 等）。</div>
+      <div class="api-params">
+        <strong>参数：</strong>
+        <code>project</code> 项目名（必填）·
+        <code>file</code> 文档文件名（必填）
+      </div>
+      <div class="api-example">curl 'http://localhost:8081/doc?project=Demo&file=characters.md'</div>
+    </div>
+
+    <div class="api-endpoint">
+      <div class="api-route"><span class="api-method">GET</span><span class="api-path">/file</span></div>
+      <div class="api-desc">下载项目内任意文件（按 MIME 自动识别 Content-Type）。</div>
+      <div class="api-params">
+        <strong>参数：</strong>
+        <code>project</code> 项目名（必填）·
+        <code>path</code> 文件相对路径（必填）
+      </div>
+      <div class="api-example">curl -O 'http://localhost:8081/file?project=Demo&path=rendered/ep001/panel_03.png'</div>
+    </div>
+
+    <div class="api-endpoint">
+      <div class="api-route"><span class="api-method">GET</span><span class="api-path">/thumb</span></div>
+      <div class="api-desc">生成图片缩略图（Pillow 实时压缩，JPEG 质量 78，缓存 1 天）。非图片文件原样返回。</div>
+      <div class="api-params">
+        <strong>参数：</strong>
+        <code>project</code> 项目名（必填）·
+        <code>path</code> 图片路径（必填）·
+        <code>width</code> 目标宽度（默认 300，16–4096）·
+        <code>height</code> 目标高度（默认 300，16–4096）·
+        <code>fit</code> 缩放模式 <code>cover</code>（裁切填满）或 <code>inside</code>（完整保留）
+      </div>
+      <div class="api-example">curl 'http://localhost:8081/thumb?project=Demo&path=rendered/ep001/panel_03.png&width=400&height=400&fit=cover' > thumb.jpg</div>
+    </div>
+
+    <h3>📖 轻小说</h3>
+
+    <div class="api-endpoint">
+      <div class="api-route"><span class="api-method">GET</span><span class="api-path">/light-novels</span></div>
+      <div class="api-desc">列出项目的轻小说章节（<code>light_novel/ln*.md</code>），返回标题、字数、访问 URL。</div>
+      <div class="api-params"><strong>参数：</strong><code>project</code> 项目名（必填）</div>
+      <div class="api-example">curl 'http://localhost:8081/light-novels?project=%E6%88%91%E7%9A%84AI%E8%80%81%E5%A6%88'</div>
+    </div>
+
+    <h3>🖥 页面路由</h3>
+
+    <div class="api-endpoint">
+      <div class="api-route"><span class="api-method">GET</span><span class="api-path">/</span></div>
+      <div class="api-desc">Reader 前端首页（番茄书架 SPA）。</div>
+    </div>
+
+    <div class="api-endpoint">
+      <div class="api-route"><span class="api-method">GET</span><span class="api-path">/reader</span></div>
+      <div class="api-desc">Reader 前端（同 <code>/</code>，语义化路径）。</div>
+    </div>
+
+    <div class="api-endpoint">
+      <div class="api-route"><span class="api-method">GET</span><span class="api-path">/health</span></div>
+      <div class="api-desc">健康检查，返回服务状态、项目根目录、端口、认证开关。无需 API Key。</div>
+      <div class="api-example">curl 'http://localhost:8081/health'</div>
+    </div>
+
+    <h3>🔐 认证</h3>
+
+    <div class="api-endpoint">
+      <div class="api-desc" style="margin:0">
+        默认 <strong>不启用</strong>认证。设置环境变量 <code>COMIC_READER_API_KEY=&lt;KEY&gt;</code> 后，
+        除 <code>/health</code> 外的所有 API 都需要在请求中携带密钥：
+      </div>
+      <div class="api-example"># 方式 1：URL 参数
+curl 'http://localhost:8081/projects?api_key=YOUR_KEY'
+
+# 方式 2：请求头
+curl -H 'X-API-Key: YOUR_KEY' 'http://localhost:8081/projects'</div>
+    </div>
+
+    <h3>⚙️ 环境变量</h3>
+
+    <div class="api-endpoint">
+      <div class="api-params" style="font-size:13px;line-height:1.9">
+        <strong style="display:block;margin-bottom:8px">启动 Reader 服务器时可配置：</strong>
+        <div>· <code>COMIC_PROJECTS_ROOT</code> — 项目根目录（默认 <code>~/comic-projects/projects</code>）</div>
+        <div>· <code>COMIC_READER_PORT</code> — 监听端口（默认 <code>8081</code>）</div>
+        <div>· <code>COMIC_READER_API_KEY</code> — 可选 API 密钥（不设置则不启用认证）</div>
+      </div>
+      <div class="api-example">COMIC_PROJECTS_ROOT=~/comic-projects/projects \\
+COMIC_READER_PORT=8081 \\
+uvicorn scripts.reader_server:app --host 0.0.0.0 --port 8081</div>
+    </div>
+
+    <div class="api-note" style="margin-top:24px">
+      <strong>错误码：</strong>
+      <code>401</code> 密钥无效 / 缺失 ·
+      <code>404</code> 项目或文件不存在 ·
+      <code>500</code> 服务器内部错误（详见响应 JSON 的 <code>detail</code> 字段）
+    </div>
+
+    <div class="api-note">
+      <strong>路径安全：</strong>
+      所有接受文件路径的接口（<code>/episode</code> <code>/doc</code> <code>/file</code> <code>/thumb</code>）都会做路径穿越防护，
+      禁止访问项目根目录之外的文件。
+    </div>
+  </section>`;
+  window.scrollTo(0,0);
+}
+
+load().catch(e=>document.getElementById('main').innerHTML='<div class="empty">加载失败：'+esc(e)+'</div>')
+</script>
+
+<!-- API 文档模态框 -->
+<div class="api-modal" id="apiModal">
+  <div class="api-mask" onclick="closeApiDoc()"></div>
+  <div class="api-dialog">
+    <div class="api-head">
+      <h2>📖 Reader API 文档</h2>
+      <button class="api-close" onclick="closeApiDoc()" title="关闭">✕</button>
+    </div>
+    <div class="api-body">
+
+      <div class="api-note">
+        <strong>基础信息：</strong>所有 API 均以 <code>/</code> 开头，默认端口 <code>8081</code>。
+        如启用 <code>COMIC_READER_API_KEY</code>，所有请求需附加 <code>?api_key=&lt;KEY&gt;</code> 或请求头 <code>X-API-Key: &lt;KEY&gt;</code>。
+      </div>
+
+      <h3>📚 项目（Projects）</h3>
+
+      <div class="api-endpoint">
+        <div class="api-route"><span class="api-method">GET</span><span class="api-path">/projects</span></div>
+        <div class="api-desc">列出所有项目（含漫画 / 轻小说），支持搜索与分页。</div>
+        <div class="api-params">
+          <strong>参数：</strong>
+          <code>search</code> 项目名模糊匹配 ·
+          <code>page</code> 页码（默认 1）·
+          <code>page_size</code> 每页数量（默认 20，最大 100）
+        </div>
+        <div class="api-example">curl 'http://localhost:8081/projects?page=1&page_size=20'</div>
+      </div>
+
+      <div class="api-endpoint">
+        <div class="api-route"><span class="api-method">GET</span><span class="api-path">/projects/by-update</span></div>
+        <div class="api-desc">按"内容文件最后修改时间"降序列出项目（最新优先）。扫描 <code>*.md</code>（含 episodes/light_novel）和所有渲染图的 mtime 取最大值。</div>
+        <div class="api-params">
+          <strong>参数：</strong>
+          <code>limit</code> 返回条数（默认 50，最大 200）·
+          <code>content_mode</code> 过滤类型：<code>comic</code> 仅漫画 / <code>light_novel</code> 仅小说 / 省略为全部
+        </div>
+        <div class="api-example">curl 'http://localhost:8081/projects/by-update?limit=20&content_mode=light_novel'</div>
+      </div>
+
+      <div class="api-endpoint">
+        <div class="api-route"><span class="api-method">GET</span><span class="api-path">/projects/{name}</span></div>
+        <div class="api-desc">获取单个项目详情：配置、统计、分集列表、图片画廊、轻小说章节。</div>
+        <div class="api-params"><strong>路径参数：</strong><code>name</code> 项目目录名（支持中文，需 URL 编码）</div>
+        <div class="api-example">curl 'http://localhost:8081/projects/%E6%88%91%E7%9A%84AI%E8%80%81%E5%A6%88'</div>
+      </div>
+
+      <div class="api-endpoint">
+        <div class="api-route"><span class="api-method">GET</span><span class="api-path">/project/{name}</span></div>
+        <div class="api-desc"><code>/projects/{name}</code> 的别名（兼容单数形式调用）。</div>
+      </div>
+
+      <h3>📄 内容获取</h3>
+
+      <div class="api-endpoint">
+        <div class="api-route"><span class="api-method">GET</span><span class="api-path">/episode</span></div>
+        <div class="api-desc">获取漫画分集正文（Markdown 原文）。</div>
+        <div class="api-params">
+          <strong>参数：</strong>
+          <code>project</code> 项目名（必填）·
+          <code>file</code> 分集文件相对路径，如 <code>episodes/ep001_xxx.md</code>（必填）
+        </div>
+        <div class="api-example">curl 'http://localhost:8081/episode?project=Demo&file=episodes/ep001_start.md'</div>
+      </div>
+
+      <div class="api-endpoint">
+        <div class="api-route"><span class="api-method">GET</span><span class="api-path">/doc</span></div>
+        <div class="api-desc">获取项目元数据文档（summary.md / characters.md / foreshadowing.md / style_guide.md 等）。</div>
+        <div class="api-params">
+          <strong>参数：</strong>
+          <code>project</code> 项目名（必填）·
+          <code>file</code> 文档文件名（必填）
+        </div>
+        <div class="api-example">curl 'http://localhost:8081/doc?project=Demo&file=characters.md'</div>
+      </div>
+
+      <div class="api-endpoint">
+        <div class="api-route"><span class="api-method">GET</span><span class="api-path">/file</span></div>
+        <div class="api-desc">下载项目内任意文件（按 MIME 自动识别 Content-Type）。</div>
+        <div class="api-params">
+          <strong>参数：</strong>
+          <code>project</code> 项目名（必填）·
+          <code>path</code> 文件相对路径（必填）
+        </div>
+        <div class="api-example">curl -O 'http://localhost:8081/file?project=Demo&path=rendered/ep001/panel_03.png'</div>
+      </div>
+
+      <div class="api-endpoint">
+        <div class="api-route"><span class="api-method">GET</span><span class="api-path">/thumb</span></div>
+        <div class="api-desc">生成图片缩略图（Pillow 实时压缩，JPEG 质量 78，缓存 1 天）。非图片文件原样返回。</div>
+        <div class="api-params">
+          <strong>参数：</strong>
+          <code>project</code> 项目名（必填）·
+          <code>path</code> 图片路径（必填）·
+          <code>width</code> 目标宽度（默认 300，16–4096）·
+          <code>height</code> 目标高度（默认 300，16–4096）·
+          <code>fit</code> 缩放模式 <code>cover</code>（裁切填满）或 <code>inside</code>（完整保留）
+        </div>
+        <div class="api-example">curl 'http://localhost:8081/thumb?project=Demo&path=rendered/ep001/panel_03.png&width=400&height=400&fit=cover' > thumb.jpg</div>
+      </div>
+
+      <h3>📖 轻小说</h3>
+
+      <div class="api-endpoint">
+        <div class="api-route"><span class="api-method">GET</span><span class="api-path">/light-novels</span></div>
+        <div class="api-desc">列出项目的轻小说章节（<code>light_novel/ln*.md</code>），返回标题、字数、访问 URL。</div>
+        <div class="api-params"><strong>参数：</strong><code>project</code> 项目名（必填）</div>
+        <div class="api-example">curl 'http://localhost:8081/light-novels?project=%E6%88%91%E7%9A%84AI%E8%80%81%E5%A6%88'</div>
+      </div>
+
+      <h3>🖥 页面路由</h3>
+
+      <div class="api-endpoint">
+        <div class="api-route"><span class="api-method">GET</span><span class="api-path">/</span></div>
+        <div class="api-desc">Reader 前端首页（番茄书架 SPA）。</div>
+      </div>
+
+      <div class="api-endpoint">
+        <div class="api-route"><span class="api-method">GET</span><span class="api-path">/reader</span></div>
+        <div class="api-desc">Reader 前端（同 <code>/</code>，语义化路径）。</div>
+      </div>
+
+      <div class="api-endpoint">
+        <div class="api-route"><span class="api-method">GET</span><span class="api-path">/health</span></div>
+        <div class="api-desc">健康检查，返回服务状态、项目根目录、端口、认证开关。无需 API Key。</div>
+        <div class="api-example">curl 'http://localhost:8081/health'</div>
+      </div>
+
+      <h3>🔐 认证</h3>
+
+      <div class="api-endpoint">
+        <div class="api-desc" style="margin:0">
+          默认 <strong>不启用</strong>认证。设置环境变量 <code>COMIC_READER_API_KEY=&lt;KEY&gt;</code> 后，
+          除 <code>/health</code> 外的所有 API 都需要在请求中携带密钥：
+        </div>
+        <div class="api-example"># 方式 1：URL 参数
+curl 'http://localhost:8081/projects?api_key=YOUR_KEY'
+
+# 方式 2：请求头
+curl -H 'X-API-Key: YOUR_KEY' 'http://localhost:8081/projects'</div>
+      </div>
+
+      <h3>⚙️ 环境变量</h3>
+
+      <div class="api-endpoint">
+        <div class="api-params" style="font-size:13px;line-height:1.9">
+          <strong style="display:block;margin-bottom:8px">启动 Reader 服务器时可配置：</strong>
+          <div>· <code>COMIC_PROJECTS_ROOT</code> — 项目根目录（默认 <code>~/comic-projects/projects</code>）</div>
+          <div>· <code>COMIC_READER_PORT</code> — 监听端口（默认 <code>8081</code>）</div>
+          <div>· <code>COMIC_READER_API_KEY</code> — 可选 API 密钥（不设置则不启用认证）</div>
+        </div>
+        <div class="api-example">COMIC_PROJECTS_ROOT=~/comic-projects/projects \
+COMIC_READER_PORT=8081 \
+uvicorn scripts.reader_server:app --host 0.0.0.0 --port 8081</div>
+      </div>
+
+      <div class="api-note" style="margin-top:24px">
+        <strong>错误码：</strong>
+        <code>401</code> 密钥无效 / 缺失 ·
+        <code>404</code> 项目或文件不存在 ·
+        <code>500</code> 服务器内部错误（详见响应 JSON 的 <code>detail</code> 字段）
+      </div>
+
+      <div class="api-note">
+        <strong>路径安全：</strong>
+        所有接受文件路径的接口（<code>/episode</code> <code>/doc</code> <code>/file</code> <code>/thumb</code>）都会做路径穿越防护，
+        禁止访问项目根目录之外的文件。
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

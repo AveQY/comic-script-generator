@@ -1,0 +1,10 @@
+{
+  "image_generation": {
+    "base_url": "https://<your-image-api-domain>/v1",
+    "endpoint": "https://<your-image-api-domain>/v1/images/generations",
+    "authorization": "Bearer <your-private-token>",
+    "model": "gpt-image-2",
+    "size": "1024x1024",
+    "timeout_seconds": 300
+  }
+}

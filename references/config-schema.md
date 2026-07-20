@@ -58,6 +58,10 @@
 | `last_panel_count` | integer | ❌ | 最近一集 Panel 数，由 update_project.py 更新 |
 | `script_unit` | string | ❌ | 固定为 `page_panel`，表示漫画 Page/Panel 格式 |
 | `style_guide_file` | string | ❌ | 风格提示词文件路径，固定为 `style_guide.md` |
+| `script_mode` | string | ❌ | 短剧分镜模式：`drama`（△剧本模式）、`quick`（快速脚本模式）、空=未启用 |
+| `target_duration` | number | ❌ | 短剧目标时长（秒），默认15 |
+| `target_episodes` | number | ❌ | 短剧计划集数 |
+| `visual_style` | string | ❌ | 视觉风格描述（同style_guide.md） |
 
 ## source_config 字段说明（source=api 时使用）
 

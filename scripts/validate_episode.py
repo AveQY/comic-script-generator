@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 import argparse, os, re, json
-FIELDS=["**格子**","**画面**","**构图**","**气泡**","**旁白**","**拟声**","**转场**","**AI 提示词**"]
+FIELDS=["**格子**","**画面**","**构图**","**气泡**","**旁白**","**拟声**","**转场**","**AI 提示词"]
+GENERIC_VISUAL_PATTERNS=[
+    "普通日常场景", "异常事件突然出现", "主角靠近异常源", "关键配角登场",
+    "世界观第一次展开", "规则第一次被验证", "主角做出第一次主动选择",
+    "危机升级", "情感冲突爆发", "关键线索出现", "结尾钩子",
+    "环境信息明确", "结合本作设定"
+]
 
 def read(p):
     with open(p,encoding='utf-8') as f: return f.read()
@@ -37,6 +43,13 @@ def quality_issues(c):
         if n>8: issues.append(f'Page {i} has {n} panels; may be too dense')
     comps=[]; empty=0
     for no,b in panels(c):
+        vm=re.search(r'\*\*画面\*\*：\s*(.+?)(?:\n\*\*构图\*\*|\Z)',b,re.S)
+        visual=vm.group(1).strip() if vm else ''
+        for pat in GENERIC_VISUAL_PATTERNS:
+            if pat in visual:
+                issues.append(f'Panel {no} visual is too generic/template-like: {pat}')
+        if len(visual) < 35:
+            issues.append(f'Panel {no} visual too short to render reliably ({len(visual)} chars)')
         m=re.search(r'\*\*构图\*\*：\s*(.+)',b); comps.append(m.group(1).strip() if m else '')
         bm=re.search(r'\*\*气泡\*\*：(.+?)(?:\n\*\*|\Z)',b,re.S)
         if bm:
@@ -64,6 +77,12 @@ def validate_episode(ep, project, mode, mn, mx):
     res={'file':os.path.basename(ep),'passed':True,'issues':[],'stats':{}}
     if not os.path.exists(ep): res['passed']=False; res['issues'].append('File does not exist'); return res
     c=read(ep); ps=panels(c); pc=len(ps); pages=count_pages(c); sc=count_scenes(c)
+    expected_m=re.search(r'\*\*预计 Panel 数\*\*\s*[：:]\s*(\d+)', c)
+    if expected_m:
+        expected=int(expected_m.group(1))
+        if expected <= 20:
+            mn=max(6, expected-2)
+            mx=expected+4
     res['stats'].update({'panels':pc,'pages':pages,'legacy_scenes':sc,'dialogues':len(re.findall(r'^-\s*[^：:\n]+[：:]',c,re.M))})
     if sc: res['passed']=False; res['issues'].append(f'Legacy Scene headers found: {sc}; use ### Panel under ## Page')
     if pages==0: res['passed']=False; res['issues'].append('Missing ## Page headers')
