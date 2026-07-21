@@ -45,7 +45,7 @@ tags: [creative, comic, screenplay, storyboard]
 - 正确：`references/reader-route-ordering.md`、`references/light-novel-garbled-text-cleanup.md`
 - 错误：`references/reader-route-ordering-2026-07-19.md`、`references/light-novel-garbled-text-cleanup-2026-07-08.md`
 - 更新日志（`## 更新日志` 节）可以使用日期标注版本，但文件名本身不能带日期。
-- **备份文件禁止上传**：`.gitignore` 必须包含 `*.bak*`、`*.backup*` 模式，防止 `.html.bak` 等文件被误提交到 GitHub。
+- **备份文件禁止上传**：`.gitignore` 必须包含 `*.bak*`、`*.backup*` 模式，防止 `.html.bak` 等文件被误提交到 GitHub。2026-07-20 实测：`templates/reader.html.bak.before-light-theme.20260719_184642` 被误提交，提交后需 `git rm` 删除并从 `.gitignore` 追加模式防止复发。
 
 ### 隐私红线
 - 禁止在 SKILL.md、references、templates、scripts 中写入：
@@ -883,6 +883,11 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs, watermar
 - `scripts/export_for_render.py` — 从现有漫画稿提取 Panel 并转换为 story-renderer 输入脚本
 - `references/light-novel-batch-continuation.md` — 轻小说批量续写模式六实战经验汇总
 - `references/reader-route-ordering-and-by-update.md` — Reader 路由顺序陷阱（FastAPI `{name:path}` 吞掉 `by-update` 子路由）与线上 app.py vs skill reader_server.py 双实现注意事项；含 `/projects/by-update` 按 mtime 排序接口的完整实现、前端「最新」视图、部署验证三件套
+
+### README 规范
+- README 末尾使用 **star-history 趋势图**（`https://api.star-history.com/svg?repos=AveQY/comic-script-generator&type=Date`），而非静态 star count 徽章。
+- README 不含更新日志。更新日志仅保留在 `SKILL.md` 的 `## 更新日志` 节。
+- 示例 badge 行放在页面顶部 `<p align="center">` 内，使用 `img.shields.io/badge/`。
 - `references/reader-modal-vs-view.md` — Reader 单文件 SPA 的「模态框 vs 独立视图」选择规则：新功能默认走独立视图（`setNav` + `#main` 切换 + `window.scrollTo(0,0)`），不走路由级模态框；含从模态框迁移到独立视图的完整清理清单、HTML/JS/CSS 模板、移动端同步要点、线上+skill 模板双同步要求
 - `references/reader-api-docs-self-describing.md` — 自描述 API 文档接口模式：`GET /api-docs?format=json|md` 让文档成为单一事实源；后端 `API_DOCS` 常量 + 前端动态 fetch 渲染，替代硬编码 HTML；含 `API_DOCS` 结构、Markdown 渲染函数、前端 `renderApiDocs` 模板、验证三件套、何时用何时不用的判断
 
@@ -1290,6 +1295,8 @@ worst quality, low quality, blurry, deformed, bad anatomy, extra limbs, watermar
 
 **关键陷阱：子 agent 文件路径** — 向子 agent 委托文件读取任务时，必须在 context 中给出**绝对路径**（如 `/root/comic-projects/projects/某项目/light_novel/ln009_第九章.md`），否则子 agent 可能因路径模糊搜索不到文件。详见 `references/light-novel-delegate-batch-pattern.md` §关键陷阱。
 
+**关键陷阱：子 agent 文件路径** — 向子 agent 委托文件读取任务时，必须在 context 中给出**绝对路径**（如 `/root/comic-projects/projects/某项目/light_novel/ln009_第九章.md`），否则子 agent 可能因路径模糊搜索不到文件。详见 `references/light-novel-delegate-batch-pattern.md` §关键陷阱。
+
 ### 委托子任务（delegate_task）生成分镜稿的格式瓶颈（重要）
 
 子任务（leaf agent）生成的漫画脚本**极容易使用错误格式**——目前观察到的错误格式包括：
@@ -1396,7 +1403,8 @@ Reader 支持「漫画」「轻小说」两种阅读模式切换，通过 Header
 - **Service Worker 导致持续 404**：即使后端已修好，SW 可能还在分发旧缓存。调试阶段在前端加入主动 unregister 逻辑：`navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()))`。
 - **async/await 语法错误**：在非 async 函数体里写 `await` 会直接报语法错，且通常没有任何运行时日志。确保所有调用了 `await api(...)` 的函数都声明为 `async function`。
 - **最稳前端架构**：单文件 SPA 优先用内联事件、`data-*` 属性、IntersectionObserver；复杂 Web Worker/IndexedDB 在单 HTML 中容易触发隐藏语法错误，保守回退更稳。
-- **复制按钮陷阱（2026-07-20 实测）**：`navigator.clipboard.writeText()` 在 HTTP（非 HTTPS）环境下静默失败，用户点击无响应且不报错。**强制修复方案**：改用 `document.execCommand('copy')` 回退方案——创建临时 `<textarea>`，设 `position:fixed;left:-9999px`，`value=t`，`select()` 后 `execCommand('copy')`，再 `removeChild()`。该方法兼容 HTTP 和 HTTPS。详见 reader.html 中的 `copyText()` 函数。
+- **复制按钮陷阱（2026-07-20 实测）**：`navigator.clipboard.writeText()` 在 HTTP（非 HTTPS）环境下静默失败，用户点击无响应且不报错。**强制修复方案**：改用 `document.execCommand('copy')` 回退方案——创建临时 `<textarea>`，`select()` 后 `execCommand('copy')`，再 `removeChild()`。详见 reader.html 中的 `copyText()` 函数。
+- **字数显示**：前端显示字符数时应使用 `字` 而非 `字节`。后端 `chars` 字段返回 `len(content.strip())`（字符数），而非 `f.stat().st_size`（字节数）。注意同步修改前端模板中所有 `${...} 字节` → `${...} 字`。
 - **图片加载兜底**：缩略图优先走 `/thumb`，但调试时可先回退到 `/file` 直接发原图，确认链路通后再加上缩略图参数。
 - **番茄小说网风格要点**：浅色背景、顶部搜索、左侧项目卡片、右侧内容区、统计卡片、分集列表、图片画廊、对照稿、正文阅读分区；主题色用番茄红渐变按钮。
 
