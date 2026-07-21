@@ -15,7 +15,7 @@
 <p align="center">
   <a href="#快速开始">快速开始</a> •
   <a href="#核心特性">核心特性</a> •
-  <a href="#隐私与本地配置">隐私配置</a> •
+  <a href="#安全配置与凭证管理">安全配置</a> •
   <a href="#脚本工具">脚本工具</a> •
   <a href="README.en.md">English</a>
 </p>
@@ -60,7 +60,7 @@
 
 ---
 
-## 隐私与本地配置
+## 安全配置与凭证管理
 
 **硬规则：skill 仓库和 skill 目录不得包含真实敏感信息。**
 
@@ -164,7 +164,7 @@ python3 scripts/render_images.py projects/<项目名>/render_input/ep001_<标题
 | 脚本 | 作用 |
 |------|------|
 | `scripts/check_update.py` | 检查远程更新，网络不通时跳过 |
-| `scripts/privacy_check.py` | 发布前隐私扫描 |
+| `scripts/privacy_check.py` | 发布前安全检查 |
 | `scripts/init_project.py` | 初始化漫画项目 |
 | `scripts/update_project.py` | 提取角色、伏笔、摘要并更新项目文件 |
 | `scripts/validate_episode.py` | 验证漫画 Page/Panel 格式 |
