@@ -259,9 +259,7 @@ python3 scripts/check_update.py
 
 ---
 
-## 支持
+## ⭐ Star 趋势
 
-如果这个项目对你有帮助，欢迎点个 ⭐ Star！
-
-[![GitHub stars](https://img.shields.io/github/stars/AveQY/comic-script-generator?style=social)](https://github.com/AveQY/comic-script-generator)
+[![Star History Chart](https://api.star-history.com/svg?repos=AveQY/comic-script-generator&type=Date)](https://star-history.com/#AveQY/comic-script-generator&Date)
 
