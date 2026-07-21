@@ -24,3 +24,7 @@ config.json
 projects/
 hotspots/
 .update_check_cache.json
+
+# Backup files
+*.bak*
+*.backup*

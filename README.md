@@ -257,41 +257,11 @@ python3 scripts/check_update.py
 
 ---
 
-## 更新日志
-
-### v1.11.0
-
-- 小说路线升级为 20 万字长篇生产流程。
-- 新增 `update_long_novel_context.py` 和 `validate_long_novel.py`。
-- 强制分批生成、压缩上下文、角色/伏笔/最近连续性提取。
-- 增加隐私配置规则：真实敏感信息必须保存在本地私有文件。
-- 新增 `config.example.json` 与 `scripts/privacy_check.py`。
-
-### v1.10.0
-
-- 完善模式六为独立小说/网文生成流程。
-- 新增 `validate_light_novel.py`。
-- 明确小说项目结构、章节 beat、正文格式、批量生成与 Reader 书架接入规则。
-
-### v1.9.0
-
-- 新增模式六：轻小说 + 关键场景插图路线。
-- 新增 `export_light_novel.py`。
-
-### v1.8.x
-
-- 集成 story-renderer 渲染流程。
-- 新增 `render_images.py --limit` 说明、并发渲染、输出目录隔离、叠字和漫画页合成经验。
-- 修正 export_for_render.py 输出为 story-renderer 手动分镜标准 `## 镜头 N`。
-
-### v1.7.0
-
-- 漫画脚本格式升级为 Page/Panel。
-- 新增格子、气泡、旁白、拟声、转场字段。
-- 新增本集结尾钩子与下集提示。
-
 ---
 
-## License
+## 支持
 
-MIT
+如果这个项目对你有帮助，欢迎点个 ⭐ Star！
+
+[![GitHub stars](https://img.shields.io/github/stars/AveQY/comic-script-generator?style=social)](https://github.com/AveQY/comic-script-generator)
+

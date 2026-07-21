@@ -45,6 +45,7 @@ tags: [creative, comic, screenplay, storyboard]
 - 正确：`references/reader-route-ordering.md`、`references/light-novel-garbled-text-cleanup.md`
 - 错误：`references/reader-route-ordering-2026-07-19.md`、`references/light-novel-garbled-text-cleanup-2026-07-08.md`
 - 更新日志（`## 更新日志` 节）可以使用日期标注版本，但文件名本身不能带日期。
+- **备份文件禁止上传**：`.gitignore` 必须包含 `*.bak*`、`*.backup*` 模式，防止 `.html.bak` 等文件被误提交到 GitHub。
 
 ### 隐私红线
 - 禁止在 SKILL.md、references、templates、scripts 中写入：
@@ -52,10 +53,10 @@ tags: [creative, comic, screenplay, storyboard]
   - 公网 IP 地址
   - 真实项目名（中文小说名、项目代号）
   - 代理端口、订阅链接、API Key
-- 示例/贴士中使用通用占位：`<user-home>/`、`<reader-deploy-dir>/`、`DemoProjectA`。
+- 示例/贴士中使用通用占位：`<user-home>/`、`<reader-deploy-dir>/`、`<projects-dir>/`、`DemoProjectA`。
 - 每次清理后运行：
   ```bash
-  grep -rn 'home/ubuntu\|110\.42\.48\.\|8\.141\.124\.\|/root/comic-projects\|tokenkey' references/ SKILL.md
+  grep -rn 'home/ubuntu\\|110\\.42\\.48\\.\\|8\\.141\\.124\\.\\|/root/comic-projects\\|tokenkey' references/ SKILL.md
   ```
   确认无泄漏。
 
@@ -1925,6 +1926,19 @@ projects/<小说名>/
 ```
 
 ### 快速直转模式（跳过阶段 1-4）
+
+**关键陷阱：子 agent 文件路径** — 第3方委托生成脚本时，必须在 context 中给出**绝对路径**（如 `<projects-dir>/某项目/light_novel/ln009_第九章.md`），否则子 agent 可能因路径模糊搜索不到文件。2026-07-20 实测：子 agent 用 `ln009_第九章.md`（无目录前缀）搜索失败，改为绝对路径后立即成功。参见 `references/light-novel-delegate-batch-pattern.md` §关键陷阱。
+
+**关键规则：风格前缀** — 每个分镜脚本文件顶部都必须包含 `**统一风格**：` 行（如 `电影级写实风格，城市夜景，暖色调灯光`）。风格前缀从 `style_guide.md` 或用户指令中读取，批量写入脚本文件。如果漏写，事后用 Python 扫描 `scripts/sd*.md` 并批量插入（推荐在 `**源章节**` 行后插入）。2026-07-20 实测 55 个文件批量插入一次完成。
+
+**关键约束：每集 ≤4000 字符** — 分镜脚本文件必须严格控制在 4000 字符以内。超出时拆分为多个文件（EP1/EP2/EP3...），每集独立文件。生成后立即验证：
+```bash
+for f in scripts/sd*.md; do
+  chars=$(wc -m < "$f")
+  echo "$(basename "$f"): ${chars} chars"
+  [ "$chars" -gt 4000 ] && echo "⚠️ 超限"
+done
+```
 
 **触发条件**：用户已有 light_novel/ln*.md 源章节和已建立的角色/场景/道具资产，只想快速产出短剧分镜脚本，不需要完整 5 阶段工作流。典型场景：长篇连载项目的中期章节转换、用户要求"直接从小说生成分镜"。
 
