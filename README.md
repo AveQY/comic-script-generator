@@ -1,7 +1,7 @@
 # Comic Script Generator
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v1.11.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.25.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/format-Page%2FPanel%20%2B%20Light%20Novel-orange.svg" alt="Format">
