@@ -261,9 +261,7 @@ python3 scripts/check_update.py
 
 ## ⭐ Star 趋势
 
-[![Star History Chart](https://api.star-history.com/svg?repos=aveqy/comic-script-generator&type=Date)](https://star-history.com/#AveQY/comic-script-generator&Date)
-
-或者直接在 GitHub 查看 Star 趋势：
-
 [![GitHub Stars](https://img.shields.io/github/stars/AveQY/comic-script-generator?style=social&label=Stars)](https://github.com/AveQY/comic-script-generator/stargazers)
+
+欢迎点个 ⭐ Star，支持项目持续更新！
 
