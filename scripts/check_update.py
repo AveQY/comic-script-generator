@@ -14,7 +14,7 @@ except ImportError:
 
 SKILL_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CACHE_FILE = os.path.join(SKILL_DIR, ".update_check_cache.json")
-REPO_URL = "https://github.com/YOUR_GITHUB_USERNAME/comic-script-generator"
+REPO_URL = "https://github.com/AveQY/comic-script-generator"
 NETWORK_TIMEOUT = 5
 
 
