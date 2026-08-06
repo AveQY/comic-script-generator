@@ -219,7 +219,7 @@ curl -s http://127.0.0.1:8081/reader | grep -c 'showRecent\|by-update'   # 应 �
 
 ```bash
 cp <reader-deploy-dir>/reader.html \
-   /root/.hermes/skills/comic-script-generator/templates/reader.html
+   <reader-deploy-dir>/templates/reader.html
 md5sum <两个文件>  # 验证一致
 ```
 

@@ -104,10 +104,33 @@ hotspots = [
 ...
 ```
 
+## 浏览器失效时的 curl 降级方案（2026-07-20 实测新增）
+
+`browser_navigate` 访问 `top.baidu.com/board?tab=realtime` 可能因浏览器守护进程未启动/Chromium 缺库而超时（120s）。此时**不要反复重试浏览器**，改用百度热搜 JSON API 直接 curl：
+
+```bash
+curl -s --max-time 15 "https://top.baidu.com/api/board?platform=pc&tab=realtime" | python3 -c "
+import json, sys
+data = json.loads(sys.stdin.read())
+for card in data.get('data', {}).get('cards', []):
+    for i, item in enumerate(card.get('content', [])[:30], 1):
+        title = item.get('word', '') or item.get('query', '')
+        hot = item.get('hotScore', '') or item.get('heatScore', '')
+        if title:
+            print(f'{i:2d}. [{hot}] {title}')
+    break
+"
+```
+
+要点：
+- `platform=pc` 返回完整榜单（2026-07-20 实测抓到 30 条）；`platform=wise` 同 URL 返回近空数据，勿用。
+- 标题字段优先 `word`，热度字段优先 `hotScore`；部分条目字段名不同，需双 fallback。
+- 解析容错：curl 失败或 JSON 空时回退 `fallback_hot_topics()`（LLM 生成候选），与 SKILL.md 模式四「话题来源兜底」一致。
+
 ## 常见问题
 
 ### Q: 如果百度热搜也无法访问怎么办？
-A: 回退到 `web_search("最近热点话题")`，从搜索结果中提取。
+A: 先用上面的 curl API 降级；再不行回退到 `web_search("最近热点话题")` 或 `fallback_hot_topics()`，从搜索结果中提取。
 
 ### Q: 抓取频率建议？
 A: 每天抓取1次即可，热点变化不会太快。

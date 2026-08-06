@@ -8,6 +8,7 @@ Sensitive operational details must live outside the skill tree. The skill should
 
 ## Hard rules
 - Do not store real `Authorization`, `Bearer`, API keys, cookies, VPN/proxy subscriptions, private domains, public server IPs, or personal deployment paths in `SKILL.md`, README, `references/`, examples, generated project files, or any git-tracked skill file.
+- Public repository URLs are not secrets. If the skill is owner-specific, hardcode the canonical repo URL instead of leaving `YOUR_GITHUB_USERNAME` placeholders.
 - Store private image/API configuration in a local file such as `~/.config/comic-script-generator/image_config.json` with mode `600`.
 - Prefer config discovery order: explicit `--config` → `$COMIC_IMAGE_CONFIG` → `~/.config/comic-script-generator/image_config.json`.
 - Keep only `config.example.json` in the skill tree, with placeholder values like `<your-image-api-domain>` and `<your-private-token>`.

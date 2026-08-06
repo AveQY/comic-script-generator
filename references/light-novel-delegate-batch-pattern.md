@@ -38,12 +38,12 @@
 target: 读取 ln009_第九章.md 并生成脚本
 
 # ✅ 成功（绝对路径）
-target: 读取 /root/comic-projects/projects/深夜电台主持人/light_novel/ln009_第九章.md 并生成脚本
+target: 读取 <projects-dir>/深夜电台主持人/light_novel/ln009_第九章.md 并生成脚本
 ```
 
 **规则**：
 - 涉及文件读取的 delegate_task，context 中必须包含**绝对路径**
-- 输出目录同理：`写入 /root/comic-projects/projects/深夜电台主持人/scripts/sd009_EP*.md`
+- 输出目录同理：`写入 <projects-dir>/深夜电台主持人/scripts/sd009_EP*.md`
 - 不要假设子 agent 知道 `COMIC_PROJECTS_ROOT` 环境变量
 - 如果源文件路径含中文，子 agent 的 `read_file` 工具能正确处理，无需 encode
 

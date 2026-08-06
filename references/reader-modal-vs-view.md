@@ -104,6 +104,6 @@ grep -c "Xxx-modal\|Xxx-mask\|Xxx-dialog\|openXxx\|closeXxx\|id=\"XxxModal\"" $f
 
 本次改造同步更新了：
 - 线上文件 `<reader-deploy-dir>/reader.html`
-- skill 模板 `/root/.hermes/skills/comic-script-generator/templates/reader.html`
+- skill 模板 `<reader-deploy-dir>/templates/reader.html`
 
 两者 md5 一致后才能算完成。**改 Reader 前端文件时永远要同步这两个位置**——线上跑的是 `<user-home>/.../reader.html`，但 skill 模板也要更新，否则下次部署会从旧模板重新生成。
