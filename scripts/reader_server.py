@@ -182,6 +182,13 @@ def read_text_safe(path: Path) -> str | None:
 # Route: GET / — serve reader.html
 # ---------------------------------------------------------------------------
 
+@app.get("/favicon.png")
+async def favicon():
+    f = Path(__file__).resolve().parent / "favicon.png"
+    if f.exists():
+        return FileResponse(f, media_type="image/png")
+    return Response(status_code=204)
+
 @app.get("/")
 async def root(request: Request):
     """Serve the reader HTML page."""
@@ -317,10 +324,62 @@ async def list_projects(
             continue
         config = load_json_safe(entry / "config.json")
         stats = _compute_project_stats(entry)
+        summary_text = read_text_safe(entry / "summary.md") or ""
+        # Prefer config.notes as the one-line selling point; fall back to summary
+        first_para = ""
+        section_headers = [
+            "## 一句话卖点",
+            "## 一句话简介",
+            "## 核心卖点",
+            "## 作品简介",
+            "## 内容简介",
+            "## 故事简介",
+            "## 简介",
+        ]
+        for header in section_headers:
+            if header in summary_text:
+                section = summary_text.split(header, 1)[1]
+                lines = []
+                for line in section.splitlines():
+                    if line.strip().startswith("##"):
+                        break
+                    if line.strip():
+                        lines.append(line.strip())
+                if lines:
+                    candidate = lines[0]
+                    candidate = re.sub(r"^#+\s*", "", candidate).strip()
+                    candidate = re.sub(r"^\*\*[^\*]+\*\*\s*", "", candidate).strip()
+                    candidate = re.sub(r"^-\s*\*[^\*]+\*\*\s*", "", candidate).strip()
+                    if candidate and len(candidate) >= 10:
+                        first_para = candidate
+                        break
+        
+        if not first_para:
+            skip_prefixes = ("#", "- **", ">", "|", "---", "***", "___", "* ", "• ", "- ")
+            for line in summary_text.splitlines():
+                s = line.strip()
+                if not s or len(s) < 10:
+                    continue
+                if any(s.startswith(p) for p in skip_prefixes):
+                    continue
+                if re.match(r"^[-*]\s+[*-]", s):
+                    continue
+                if re.match(r"^\d+\.\s", s):
+                    continue
+                first_para = s
+                break
+        
+        first_para = first_para or ""
+        description = config.get("notes") or first_para or config.get("description") or ""
         all_projects.append({
             "name": name,
+            "description": description[:240],
             "config": config,
             "stats": stats,
+            "status": config.get("generation_status"),
+            "status": config.get("generation_status"),
+            "score": config.get("score"),
+            "score_label": config.get("score_label") or (f"⭐ {config.get('score')}" if config.get("score") else None),
         })
 
     # Pagination
@@ -497,6 +556,9 @@ async def list_projects_by_update(
                 _dt.datetime.fromtimestamp(last_updated).isoformat()
                 if last_updated > 0 else None
             ),
+            "status": config.get("generation_status"),
+            "score": config.get("score"),
+            "score_label": config.get("score_label") or (f"⭐ {config.get('score')}" if config.get("score") else None),
         })
 
     # Sort by last_updated desc (newest first)
