@@ -65,6 +65,124 @@ def resolve_art_style(art_style: str):
     return art_style, None
 
 
+# Prose style presets / 文笔风格预设
+PROSE_STYLE_PRESETS = {
+    "张嘉佳": {
+        "name": "张嘉佳",
+        "description": "温暖中带涩，意象密集，短句节奏，善于写中年人的柔软与钝感。物象承载情感，冷色调比喻，自嘲式短句。代表作《从你的全世界路过》《云边有个小卖部》。",
+        "prompt_suffix": "文笔风格：张嘉佳。用具体的物象承载情感，避免直接抒情；用短句节奏，像有人在你耳边说；保持温暖中带涩的底色；写中年人的柔软与钝感；比喻要新鲜、冷冽、不落俗套；避免朋友圈金句感，要接近纯文学质感。"
+    },
+    "余华": {
+        "name": "余华",
+        "description": "冷静克制，白描手法，苦难中见人性。语言极简，情绪收在骨头里。代表作《活着》《许三观卖血记》。",
+        "prompt_suffix": "文笔风格：余华。用极简的白描手法，冷静克制地叙述；苦难中见人性，但不煽情；语言要像刀一样锋利又克制；情绪收在骨头里，不直接抒情。"
+    },
+    "村上春树": {
+        "name": "村上春树",
+        "description": "疏离感，平行叙事，超现实细节，音乐与美食意象。第一人称内省，孤独但温暖。代表作《挪威的森林》《海边的卡夫卡》。",
+        "prompt_suffix": "文笔风格：村上春树。保持适度的疏离感和平行叙事；加入超现实的细节；多用音乐、美食意象；第一人称内省式叙述；孤独但温暖的基调；比喻要独特、不落俗套。"
+    },
+    "东野圭吾": {
+        "name": "东野圭吾",
+        "description": "悬疑推理，层层剥茧，人性反转，社会议题。对话推动剧情，节奏紧凑。代表作《白夜行》《解忧杂货店》。",
+        "prompt_suffix": "文笔风格：东野圭吾。悬疑推理风格，层层剥茧；对话推动剧情，节奏紧凑；注重人性反转和社会议题；保持紧张感，但留有余温。"
+    },
+    "汪曾祺": {
+        "name": "汪曾祺",
+        "description": "淡而有味，市井烟火，草木皆情。语言清新，节奏舒缓，善于写日常中的诗意。代表作《受戒》《大淖记事》。",
+        "prompt_suffix": "文笔风格：汪曾祺。淡而有味，市井烟火气；草木皆情，善于写日常中的诗意；语言清新自然，节奏舒缓；避免刻意煽情，让情感自然流露。"
+    },
+    "严歌苓": {
+        "name": "严歌苓",
+        "description": "女性视角细腻，历史与个人交织，语言华丽有质感。善于写大时代下的小人物命运。代表作《芳华》《金陵十三钗》。",
+        "prompt_suffix": "文笔风格：严歌苓。女性视角细腻敏感；历史与个人命运交织；语言华丽有质感；善于写大时代下的小人物；注意时代细节的准确性。"
+    },
+    "王小波": {
+        "name": "王小波",
+        "description": "荒诞幽默，黑色讽刺，性张力，自由精神。语言跳跃，思维发散，反讽与诗意并存。代表作《黄金时代》《沉默的大多数》。",
+        "prompt_suffix": "文笔风格：王小波。荒诞幽默，黑色讽刺；语言跳跃，思维发散；反讽与诗意并存；保持自由精神；不回避敏感话题但要用巧思。"
+    },
+    "亦舒": {
+        "name": "亦舒",
+        "description": "都市女性，犀利毒舌，简洁冷峻，独立清醒。对话机智，节奏快，善于写职场与情感。代表作《喜宝》《我的前半生》。",
+        "prompt_suffix": "文笔风格：亦舒。都市女性视角，犀利毒舌；语言简洁冷峻；人物独立清醒；对话机智；节奏快；善于写职场与情感中的清醒与克制。"
+    },
+    "江南": {
+        "name": "江南",
+        "description": "宏大世界观，少年热血，细腻情感，史诗感。语言华丽，描写宏大场景与细腻内心并存。代表作《龙族》《九州缥缈录》。",
+        "prompt_suffix": "文笔风格：江南。宏大世界观，少年热血；细腻情感与史诗感并存；语言华丽，描写宏大场景与细腻内心；保持少年感与宿命感。"
+    },
+    "马伯庸": {
+        "name": "马伯庸",
+        "description": "历史悬疑，考据详实，脑洞大开，职场权谋。语言幽默，节奏快，善于写小人物的历史现场。代表作《长安十二时辰》《古董局中局》。",
+        "prompt_suffix": "文笔风格：马伯庸。历史悬疑，考据详实；脑洞大开，职场权谋；语言幽默，节奏快；善于写小人物的历史现场；细节真实可信。"
+    },
+    "丁墨": {
+        "name": "丁墨",
+        "description": "甜宠推理，高智商男主，强女主，悬疑+恋爱双线。语言轻松，节奏明快，善于写高智商博弈与甜蜜互动。代表作《他来了，请闭眼》《美人为馅》。",
+        "prompt_suffix": "文笔风格：丁墨。甜宠推理风格，高智商男主+强女主；悬疑与恋爱双线并行；语言轻松，节奏明快；善于写高智商博弈与甜蜜互动。"
+    },
+    "Priest": {
+        "name": "Priest",
+        "description": "耽美/奇幻，世界观宏大，人物鲜活，幽默与热血并存。语言老练，节奏掌控力强。代表作《默读》《杀破狼》《镇魂》。",
+        "prompt_suffix": "文笔风格：Priest。世界观宏大，人物鲜活；幽默与热血并存；语言老练，节奏掌控力强；善于写群像和复杂关系；保持故事的张力与深度。"
+    },
+    "沧月": {
+        "name": "沧月",
+        "description": "奇幻武侠，空灵唯美，悲剧感，江湖与宿命。语言华丽，意境深远，善于写武侠中的爱恨情仇。代表作《镜》《听雪楼》。",
+        "prompt_suffix": "文笔风格：沧月。奇幻武侠，空灵唯美；悲剧感，江湖与宿命；语言华丽，意境深远；善于写武侠中的爱恨情仇与家国天下。"
+    },
+    "笛安": {
+        "name": "笛安",
+        "description": "青春疼痛，细腻敏感，家族与成长，语言有诗意。善于写青春期的困惑与家庭关系。代表作《西决》《东霓》《南音》。",
+        "prompt_suffix": "文笔风格：笛安。青春疼痛，细腻敏感；家族与成长主题；语言有诗意；善于写青春期的困惑与家庭关系；保持真诚与脆弱感。"
+    },
+    "七堇年": {
+        "name": "七堇年",
+        "description": "青春文学，私语化，自我探索，语言干净清澈。善于写成长中的孤独与寻找。代表作《被窝是青春的坟墓》《澜本嫁衣》。",
+        "prompt_suffix": "文笔风格：七堇年。青春文学，私语化；自我探索，语言干净清澈；善于写成长中的孤独与寻找；保持真诚的青春感，避免矫情。"
+    },
+    "沈石溪": {
+        "name": "沈石溪",
+        "description": "动物小说，拟人化，自然观察，生存与情感。语言生动，细节真实，善于写动物世界的人性。代表作《狼王梦》《第七条猎狗》。",
+        "prompt_suffix": "文笔风格：沈石溪。动物小说视角，拟人化但不失真实；自然观察，生存与情感；语言生动，细节真实；善于写动物世界的人性光辉。"
+    }
+}
+
+
+def resolve_prose_style(prose_style):
+    """Resolve prose_style from preset key, list of keys, or custom description.
+    Returns (resolved_style, preset_keys_list_or_None)
+    """
+    if not prose_style:
+        return "", []
+    
+    if isinstance(prose_style, list):
+        resolved = []
+        for key in prose_style:
+            if key in PROSE_STYLE_PRESETS:
+                resolved.append(PROSE_STYLE_PRESETS[key]["prompt_suffix"])
+            else:
+                resolved.append(str(key))
+        return "\n\n".join(resolved), prose_style
+    
+    if isinstance(prose_style, str):
+        if prose_style in PROSE_STYLE_PRESETS:
+            return PROSE_STYLE_PRESETS[prose_style]["prompt_suffix"], [prose_style]
+        return prose_style, [prose_style]
+    
+    return "", []
+
+
+def format_prose_style_display(prose_style):
+    """Format prose_style for display in config.json."""
+    if not prose_style:
+        return ""
+    if isinstance(prose_style, list):
+        return ", ".join(prose_style)
+    return str(prose_style)
+
+
 def create_style_guide(project_dir: str, art_style: str):
     """Create style_guide.md in project directory."""
     positive, preset_key = resolve_art_style(art_style)
@@ -87,7 +205,7 @@ def create_style_guide(project_dir: str, art_style: str):
 
 def create_project(project_name: str, output_dir: str, density_mode: str = "B",
                    total_episodes: int = 6, art_style: str = "", language: str = "zh-CN",
-                   source: str = "local", source_config: dict = None):
+                   prose_style: str = "", source: str = "local", source_config: dict = None):
     """Create a new comic project with full directory structure."""
     
     project_dir = os.path.join(output_dir, "projects", project_name)
@@ -98,6 +216,9 @@ def create_project(project_name: str, output_dir: str, density_mode: str = "B",
     
     # Resolve art_style from preset or custom
     resolved_style, preset_key = resolve_art_style(art_style)
+    
+    # Resolve prose_style
+    prose_resolved, prose_presets = resolve_prose_style(prose_style)
     
     # Create config.json
     config = {
@@ -118,12 +239,20 @@ def create_project(project_name: str, output_dir: str, density_mode: str = "B",
         "source_config": source_config or {},
         "characters": [],
         "foreshadowing_active": [],
-        "notes": ""
+        "notes": "",
+        "prose_style": format_prose_style_display(prose_style) if prose_style else "",
+        "prose_style_presets": prose_presets
     }
     
     config_path = os.path.join(project_dir, "config.json")
     with open(config_path, 'w', encoding='utf-8') as f:
         json.dump(config, f, indent=2, ensure_ascii=False)
+    
+    # Create prose_style_guide.md if prose_style is set
+    if prose_resolved:
+        prose_guide_path = os.path.join(project_dir, "prose_style_guide.md")
+        with open(prose_guide_path, 'w', encoding='utf-8') as f:
+            f.write(f"# 文笔风格指南\n\n{prose_resolved}\n")
     
     # Create style_guide.md
     guide_path = create_style_guide(project_dir, resolved_style)
@@ -176,6 +305,8 @@ def main():
                         help="API URL (required when source=api)")
     parser.add_argument("--api-key", default="",
                         help="API key (required when source=api)")
+    parser.add_argument("--prose-style", default="",
+                        help="Prose writing style: single key (e.g. 张嘉佳) or comma-separated list (e.g. 张嘉佳,余华)")
     
     args = parser.parse_args()
     
@@ -199,12 +330,18 @@ def main():
             "cache_ttl": 3600
         }
 
+    prose_style = args.prose_style
+    # Parse comma-separated into list
+    if prose_style and "," in prose_style:
+        prose_style = [s.strip() for s in prose_style.split(",") if s.strip()]
+
     project_dir = create_project(
         project_name=args.project_name,
         output_dir=args.output,
         density_mode=args.mode,
         total_episodes=args.episodes,
         art_style=args.art_style,
+        prose_style=prose_style,
         language=args.language,
         source=args.source,
         source_config=source_config

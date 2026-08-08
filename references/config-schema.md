@@ -31,7 +31,8 @@
   "hotspot_date": "YYYY-MM-DD, 热点抓取日期",
   "characters": ["角色名列表"],
   "foreshadowing_active": ["未回收伏笔描述"],
-  "notes": "string, 项目备注"
+  "notes": "string, 项目备注",
+  "prose_style": "string 或 array[string], 文笔风格（可选）：字符串如 张嘉佳、余华、村上春树 等；数组如 [\"张嘉佳\", \"村上春树\"] 表示多选。影响全本小说续写的文笔语气，创建时选择一次，续写时自动沿用",
 }
 ```
 
@@ -55,6 +56,7 @@
 | `characters` | array | ❌ | 已创建的角色名列表 |
 | `foreshadowing_active` | array | ❌ | 当前未回收的伏笔描述 |
 | `notes` | string | ❌ | 项目备注，可记录特殊设定 |
+| `prose_style` | string | ❌ | 文笔风格描述，如"张嘉佳"、"余华"、"村上春树"，或自由描述。影响后续续写文笔语气 |
 | `last_panel_count` | integer | ❌ | 最近一集 Panel 数，由 update_project.py 更新 |
 | `script_unit` | string | ❌ | 固定为 `page_panel`，表示漫画 Page/Panel 格式 |
 | `style_guide_file` | string | ❌ | 风格提示词文件路径，固定为 `style_guide.md` |

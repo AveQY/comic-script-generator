@@ -39,6 +39,12 @@ pdir = Path(projects_root) / book_name
 
 **大纲风格维度确认（2026-07-20 实测，强制前置）**：用户热点选题后要完整大纲时，**先确认 5 个风格维度再动笔**——类型强度、爽文色彩、智斗密度、结局基调、多线融合。《替考AI》未做前置确认，用户连续 5 轮追加（悬疑→爽文→三线融合→开放结局→智斗），每轮重写整份卷纲。五维度模板+爽文元素库+智斗层级设计+多线融合技法+开放式结局模式见 `references/novel-outline-style-dimensions.md`。用户说「就按这个大纲完整写完」才是开工信号，此前只维护大纲文档。**补充（2026-07-21）**：该参考文档是《替考AI》项目的已确认决策源（目标 32 章 × 13 万字、教育悬疑、三线融合、开放结局）——大纲会话中断后，正文生成必须从该文档读取规划，不要在正文章节里另立章节数/字数目标。
 
+**文笔风格选择（强制）**：创建小说项目时，**必须**让用户选择文笔风格，可多选。预设见 `references/config-schema.md` `prose_style` 字段（张嘉佳、余华、村上春树、东野圭吾、汪曾祺、严歌苓、王小波、亦舒、江南、马伯庸、丁墨、Priest、沧月、笛安、七堇年、沈石溪 等 16 种）。用户选择后：
+1. 写入 `config.json` 的 `prose_style`（多选时写入数组，如 `["张嘉佳", "村上春树"]`；单选时写入字符串 `"张嘉佳"`）和 `prose_style_presets`（保留原始选择列表）
+2. 生成 `prose_style_guide.md`，包含所有选中风格的 prompt suffix 拼接文本
+3. **续写时自动读取 `config.json` 的 `prose_style` + `prose_style_guide.md`，将文笔提示词注入到每章生成的 prompt 中，不需要用户重复选择**
+4. 颗粒度为**单本小说**——即该项目的所有续写自动沿用创建时的选择
+
 生成小说项目时必须写入 `config.json`：
 
 ```json
@@ -46,7 +52,9 @@ pdir = Path(projects_root) / book_name
   "content_mode": "light_novel",
   "script_unit": "light_novel",
   "density_mode": "LN",
-  "category": "都市日常 / 校园恋爱 / 古风奇幻 / 赛博悬疑 / 职场喜剧 / 美食治愈 / 末日公路 / 星际冒险 / 民俗怪谈 / 轻推理"
+  "category": "都市日常 / 校园恋爱 / 古风奇幻 / 赛博悬疑 / 职场喜剧 / 美食治愈 / 末日公路 / 星际冒险 / 民俗怪谈 / 轻推理",
+  "prose_style": "张嘉佳",
+  "prose_style_presets": ["张嘉佳"]
 }
 ```
 
@@ -61,6 +69,7 @@ projects/<小说名>/
 ├── characters.md           # 角色档案
 ├── foreshadowing.md        # 伏笔追踪
 ├── style_guide.md          # 插图风格
+├── prose_style_guide.md    # 文笔风格指南（如有 prose_style 则生成）
 ├── light_novel/
 │   ├── ln001_<章名>.md
 │   ├── ln002_<章名>.md

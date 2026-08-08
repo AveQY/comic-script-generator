@@ -1,7 +1,7 @@
 ---
 name: comic-script-generator
 description: 根据大纲或热点生成漫画分镜稿/小说/短剧分镜脚本，支持项目管理、角色档案、伏笔追踪。总协议+路由器，具体工作流在 skills/ 子 skill 中。
-version: 1.26.5
+version: 1.27.0
 tags: [creative, comic, screenplay, storyboard]
 ---
 
@@ -181,6 +181,7 @@ python scripts/consistency_check.py episodes/epXXX_xxx.md --project-dir projects
 
 ## 更新日志
 
+- **v1.27.0（2026-08-08）**：新增文笔风格（prose_style）配置。创建小说时可多选文笔风格（16种预设），写入 config.json + prose_style_guide.md，续写时自动沿用，颗粒度为单本小说。修复 init_project.py 配置生成逻辑。
 - v1.26.0（2026-08-05）：新增模式八（小说爆款评估）
 - v1.25.0–v1.21.0（2026-07-19~21）：Reader 改造、短剧分镜、快速直转、单文件 SPA 重构
 - v1.20.0（2026-07-12）：整合 Reader 服务器到 skill
