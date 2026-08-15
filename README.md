@@ -1,3 +1,5 @@
+
+
 # Comic Script Generator
 
 <p align="center">
@@ -109,7 +111,7 @@ python3 scripts/init_project.py "项目名" --output ~/comic-projects --mode B -
 会创建：
 
 ```text
-projects/<项目名>/
+<输出目录>/projects/<项目名>/
 ├── config.json
 ├── summary.md
 ├── characters.md
@@ -117,6 +119,7 @@ projects/<项目名>/
 ├── style_guide.md
 └── episodes/
 ```
+（注：脚本会在 `--output` 指定路径下自动创建 `projects/` 子目录进行项目隔离，实际路径为 `~/comic-projects/projects/<项目名>/`）
 
 ### 2. 生成并验证漫画稿
 
@@ -262,4 +265,3 @@ python3 scripts/check_update.py
 ## ⭐ Star 趋势
 
 [![Star History Chart](https://api.star-history.com/svg?repos=aveqy/comic-script-generator&type=Date)](https://star-history.com/#AveQY/comic-script-generator&Date)
-
