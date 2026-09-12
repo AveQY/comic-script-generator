@@ -188,7 +188,7 @@ python scripts/consistency_check.py episodes/epXXX_xxx.md --project-dir projects
 - **v1.28.0（2026-09-12）**：references 去重合并——6 篇高度重叠的渲染/Reader 踩坑记录（reader-rendering-lessons、rendering-reader-lessons、manga-rendering-lessons、rendering-and-reader-ops、reader-and-manga-logic、logic-style-rendering-and-reader-debug）合并为 `references/manga-rendering-and-reader-lessons.md`（原文可从 git 历史找回），references 总数 63→58；修复 8 处指向带日期后缀旧文件名的悬空引用；13 个子 skill frontmatter 补充 version 字段；check_update.py 支持 `--force` 跳过缓存；description 补充口语化触发场景；规则 8 改为跨 Agent 通用表述；"双副本同步"标注为作者个人工作流。
 - **v1.27.1（2026-09-12）**：修复 check_update.py 缓存缺陷（load_cache 之前从未被调用，导致缓存写而无用、每次调用都发起网络检查），新增 24 小时 TTL 短路逻辑；更新日志按时间正序排列；README 补全至 v1.27.0 实际内容（子 skill 架构、23 个脚本、references 分类索引）。
 - **v1.27.0（2026-08-08）**：新增文笔风格（prose_style）配置。创建小说时可多选文笔风格（16种预设），写入 config.json + prose_style_guide.md，续写时自动沿用，颗粒度为单本小说。修复 init_project.py 配置生成逻辑。
-- v1.26.5（2026-08-06）：重构为路由式架构。主 SKILL.md 精简为总协议+路由器，8 个模式 + 5 个辅助功能拆分为独立子 skill 文件（`skills/csg-*/SKILL.md`），仿 cheat-on-content 设计。每个子 skill 独立维护，降低上下文加载开销。
+- v1.26.5（2026-08-06）：重构为路由式架构。主 SKILL.md 精简为总协议+路由器，8 个模式 + 5 个辅助功能拆分为独立子 skill 文件（`skills/csg-*/SKILL.md`）。每个子 skill 独立维护，降低上下文加载开销。
 - v1.26.0（2026-08-05）：新增模式八（小说爆款评估）
 - v1.25.0–v1.21.0（2026-07-19~21）：Reader 改造、短剧分镜、快速直转、单文件 SPA 重构
 - v1.20.0（2026-07-12）：整合 Reader 服务器到 skill

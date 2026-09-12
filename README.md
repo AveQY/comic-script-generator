@@ -39,7 +39,7 @@
 
 ## 架构：总协议 + 路由器（v1.26.5+）
 
-自 v1.26.5 起采用**路由式子 skill 架构**（仿 [cheat-on-content](https://github.com/XBuilderLAB/cheat-on-content) 设计）：
+自 v1.26.5 起采用**路由式子 skill 架构**：
 
 - 根目录 `SKILL.md` = **总协议 + 路由器**（跨模式强制规则、隐私规范、更新检查），保持轻量；
 - 具体工作流拆分到 `skills/csg-*/SKILL.md` **13 个子 skill**，按需加载，降低上下文开销；
