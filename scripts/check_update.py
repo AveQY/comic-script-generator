@@ -16,6 +16,7 @@ SKILL_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CACHE_FILE = os.path.join(SKILL_DIR, ".update_check_cache.json")
 REPO_URL = "https://github.com/AveQY/comic-script-generator"
 NETWORK_TIMEOUT = 5
+CACHE_TTL_HOURS = 24
 
 
 def check_network():
@@ -98,6 +99,20 @@ def check_update():
         "action": "skip",
         "message": "",
     }
+
+    # 0. Fresh cache short-circuit: skip network check within TTL
+    cached = load_cache()
+    if cached.get("action") == "up_to_date":
+        try:
+            age = datetime.now() - datetime.fromisoformat(cached["timestamp"])
+            if age < timedelta(hours=CACHE_TTL_HOURS):
+                result["action"] = "up_to_date"
+                result["message"] = (
+                    f"{CACHE_TTL_HOURS}小时内已检查过，使用缓存结果（{cached.get('message', '')}）"
+                )
+                return result
+        except Exception:
+            pass
 
     # 1. Check network
     if not check_network():
