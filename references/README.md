@@ -1,6 +1,6 @@
 # Comic Script Generator References
 
-`references/` 共 71 个参考文档，**按需读取，不要一次性全部加载**。子 skill（`skills/csg-*`）会在对应步骤标注需要读取的文件。
+`references/` 共 58 个参考文档，**按需读取，不要一次性全部加载**。子 skill（`skills/csg-*`）会在对应步骤标注需要读取的文件。
 
 > 命名约定：`light-novel-*` 轻小说线 · `reader-*` / `rendering-*` / `manga-*` Reader 与渲染线 · `*-lessons` / `*-pitfall` / `write_file-*` 实战踩坑记录。
 
@@ -33,7 +33,6 @@
 | 文件 | 内容 |
 |------|------|
 | `panel-format-generation-lessons.md` | Page/Panel 生成实战经验：格式通过≠故事连贯、先写 episode beats、保守提取伏笔 |
-| `manga-rendering-lessons.md` | 漫画渲染经验 |
 | `market-manga-production-lessons.md` | 市场向漫画生产经验 |
 | `market-manga-validation.md` | 市场向漫画验收 |
 | `delegate-outline-drift.md` | 子代理大纲漂移陷阱 |
@@ -47,21 +46,17 @@
 
 | 文件 | 内容 |
 |------|------|
+| `manga-rendering-and-reader-lessons.md` | **渲染与 Reader 经验汇总（合并版）**：漫画逻辑/抽象模板句黑名单、风格锁、两段式叠字管线、并发参数、Reader 前端坑速查、部署现实核查、项目清理。v1.28.0 起由 6 篇重叠文档合并而成 |
 | `local-reader-and-renderer-ops.md` | 本地 Reader/渲染器运维 |
 | `local-reader-api.md` | 本地 Reader API |
 | `online-reader-deployment.md` | 线上 Reader/API 部署记录：域名、路由、Nginx 反代、认证与常见故障 |
 | `novel-reader-deployment.md` | 小说 Reader 部署 |
 | `reader-api-docs-self-describing.md` | API 文档自描述接口 |
-| `reader-and-manga-logic.md` | Reader 与漫画逻辑 |
 | `reader-generation-debug.md` | Reader 生成调试 |
 | `reader-homepage-light-novel-ui.md` | Reader 首页轻小说 UI |
 | `reader-modal-vs-view.md` | 模态框 vs 独立视图 |
 | `reader-render-pitfalls.md` | Reader 渲染陷阱 |
-| `reader-rendering-lessons.md` | Reader 渲染经验 |
 | `reader-route-ordering-and-by-update.md` | Reader 路由顺序与按更新排序 |
-| `rendering-and-reader-ops.md` | 渲染与 Reader 运维 |
-| `rendering-reader-lessons.md` | 渲染/Reader 经验汇总 |
-| `logic-style-rendering-and-reader-debug.md` | 逻辑/风格/渲染与 Reader 调试 |
 | `long-novel-production-and-reader.md` | 长篇生产与 Reader |
 | `frontend-optimization.md` | Reader 前端性能优化：分页、懒加载、搜索上下文限制、后端分页接口变更与回滚 |
 

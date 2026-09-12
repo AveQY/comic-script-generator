@@ -1,7 +1,7 @@
 # Comic Script Generator
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v1.27.1-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.28.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/format-Page%2FPanel%20%2B%20Light%20Novel-orange.svg" alt="Format">
@@ -43,7 +43,7 @@
 
 - 根目录 `SKILL.md` = **总协议 + 路由器**（跨模式强制规则、隐私规范、更新检查），保持轻量；
 - 具体工作流拆分到 `skills/csg-*/SKILL.md` **13 个子 skill**，按需加载，降低上下文开销；
-- `references/` 下 71 篇参考文档按需读取，分类索引见 [`references/README.md`](references/README.md)。
+- `references/` 下 58 篇参考文档按需读取，分类索引见 [`references/README.md`](references/README.md)。
 
 ### 模式路由表
 

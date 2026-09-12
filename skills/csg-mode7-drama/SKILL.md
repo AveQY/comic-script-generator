@@ -1,5 +1,6 @@
 ---
 name: csg-mode7-drama
+version: 1.0.0
 description: >-
   将小说章节转化为短剧拍摄脚本（△ 剧本/分镜表/Seedance 时间轴），含五阶段工作流与快速直转模式。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, terminal

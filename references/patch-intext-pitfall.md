@@ -93,4 +93,4 @@ patch 已经把字段在文件中翻来覆去几十次，但 LLM 没读文件，
 
 在轻小说模式六的"验证与维护"段（写完每章后运行的检查项那里），建议加一行：
 
-> **`patch` 工具增补正文的安全性（重要）**：使用 patch 增补章节内容时，每次 patch 完成后必须 `read_file` 校验相邻段未被误删、无 phantom 字符（如 `];`、`}`），详见 `references/patch-intext-pitfall-2026-07-08.md`。
+> **`patch` 工具增补正文的安全性（重要）**：使用 patch 增补章节内容时，每次 patch 完成后必须 `read_file` 校验相邻段未被误删、无 phantom 字符（如 `];`、`}`），详见 `references/patch-intext-pitfall.md`。

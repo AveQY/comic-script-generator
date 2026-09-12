@@ -1,5 +1,6 @@
 ---
 name: csg-mode4-batch
+version: 1.0.0
 description: >-
   批量生成多个独立漫画项目，自动抓取热点话题，循环创建项目骨架、生成脚本、验证。支持 batch_generate.py 驱动。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, terminal

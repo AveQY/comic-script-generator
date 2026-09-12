@@ -1,5 +1,6 @@
 ---
 name: csg-mode1-user-outline
+version: 1.0.0
 description: >-
   根据用户提供的故事情节大纲生成详细 Page/Panel 分镜脚本，含角色档案、伏笔追踪、自动更新与验证。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, terminal

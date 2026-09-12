@@ -97,7 +97,7 @@ grep -c "Xxx-modal\|Xxx-mask\|Xxx-dialog\|openXxx\|closeXxx\|id=\"XxxModal\"" $f
 
 **踩到的坑**：
 1. 删除模态框 HTML 时用 `sed -i '518,689d'` 按行号删除——**前提是要先用 `grep -n` 确认起止行**，不能凭印象。
-2. patch CSS 时凭记忆构造 `old_string`，结果两次都不匹配（我以为的样式 vs 文件里实际样式不同）。**教训：长文件 patch 前必须 `read_file` 对齐真实内容，不能凭记忆写 old_string**——这跟 `references/patch-intext-pitfall-2026-07-08.md` 对中文正文的教训是同一类，但对 CSS/代码段同样适用。
+2. patch CSS 时凭记忆构造 `old_string`，结果两次都不匹配（我以为的样式 vs 文件里实际样式不同）。**教训：长文件 patch 前必须 `read_file` 对齐真实内容，不能凭记忆写 old_string**——这跟 `references/patch-intext-pitfall.md` 对中文正文的教训是同一类，但对 CSS/代码段同样适用。
 3. 改造时容易漏掉移动端的 `mXxx` 按钮——`setNav` 数组和 HTML 都要同步加。
 
 ## 同步更新

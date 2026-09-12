@@ -1,5 +1,6 @@
 ---
 name: csg-market-validation
+version: 1.0.0
 description: >-
   市场向漫画的验收标准：100 分评分表、硬性检查项、自动化验收报告模板。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, terminal

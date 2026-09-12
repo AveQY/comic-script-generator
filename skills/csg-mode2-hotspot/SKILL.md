@@ -1,5 +1,6 @@
 ---
 name: csg-mode2-hotspot
+version: 1.0.0
 description: >-
   从百度热搜等平台抓取热点话题，生成创意大纲和漫画分镜脚本。支持 TOP10 展示、用户选择后生成。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, terminal

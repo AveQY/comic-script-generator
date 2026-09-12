@@ -1,5 +1,6 @@
 ---
 name: csg-mode6-light-novel
+version: 1.0.0
 description: >-
   独立的轻小说/网文生产线：番茄小说风格正文 + 每章关键插图 + 角色档案 + 伏笔追踪 + 长篇上下文压缩。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, terminal

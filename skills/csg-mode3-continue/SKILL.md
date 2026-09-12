@@ -1,5 +1,6 @@
 ---
 name: csg-mode3-continue
+version: 1.0.0
 description: >-
   续写已有项目的后续集数，或修改现有内容。支持伏笔管理、角色一致性检查、写作风格延续。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, terminal

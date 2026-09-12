@@ -1,5 +1,6 @@
 ---
 name: csg-init
+version: 1.0.0
 description: >-
   comic-script-generator 的首次 onboarding 与项目初始化。创建项目骨架、选择分镜密度模式、配置项目。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, terminal

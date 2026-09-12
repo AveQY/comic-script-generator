@@ -99,7 +99,7 @@ LLM 在 `new_string` 中"重写"而非"复制+插入"时，注意力分散导致
 
 ## 章末钩子段的内容字数吞噬（本 session 复确认）
 
-`references/light-novel-batch-generation-lessons-2026-07-07.md` §3 和 `light-novel-single-batch-generation-2026-07-08.md` 均记录了 `## 章末钩子` 段较长（200-500 CJK 字）会"吞噬"正文 body-only 字数。本 session 再次复确认：第 5 章初稿 CJK=2177（总字符含钩子段约 2400+），但 body-only 口径下差了约 200 字——这是因为章末钩子段写了一个相对完整的场景（手机震动 + 「辞职。」短信），占了约 180 CJK 字。
+`references/light-novel-batch-generation.md` §3 和 `light-novel-single-batch-generation.md` 均记录了 `## 章末钩子` 段较长（200-500 CJK 字）会"吞噬"正文 body-only 字数。本 session 再次复确认：第 5 章初稿 CJK=2177（总字符含钩子段约 2400+），但 body-only 口径下差了约 200 字——这是因为章末钩子段写了一个相对完整的场景（手机震动 + 「辞职。」短信），占了约 180 CJK 字。
 
 **复确认的建议不变**：单脚本批量生成多章时，目标设为 body CJK ≥2800（留 200 字缓冲给钩子段）。同时钩子段应控制简练，关键悬念信息放在正文最后一段而非钩子段内。
 

@@ -1,5 +1,6 @@
 ---
 name: csg-templates
+version: 1.0.0
 description: >-
   角色档案、伏笔追踪、摘要索引的 Markdown 模板。用于项目文件的标准格式参考。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, terminal

@@ -249,4 +249,4 @@ python3 scripts/verify_light_novel_delivery.py projects/<书名>
 
 这条陷阱此前未在 skill 中记录，因为它跟 SKILL.md note 7「禁用 Shell heredoc 写中文正文」是**不同维度**的问题——那是写入路径损坏文件内容，这是运行时 Python 解析失败无输出。两者都属于"避免在 shell 层混入 CJK"的总主题，但触发条件和修复方法不同。
 
-**导入后必须验证**：跑 heredoc 残留扫描（`re.findall(r"\]='''|\\\\''|isVisible|jar勤", t)`）+ 标准四项（中文字符 ≥2500、`<!-- ILLUST_\d+ -->` ≥3、`## 章末钩子` 存在、无 `**格子**`/`### Panel` 等漫画字段污染）+ 对白格式 `「.*?」——[^\n]+` ≥8 条。残留 >0 即丢弃重写，不要逐句修。详见 `references/light-novel-heredoc-pitfall-2026-07-08.md`。
+**导入后必须验证**：跑 heredoc 残留扫描（`re.findall(r"\]='''|\\\\''|isVisible|jar勤", t)`）+ 标准四项（中文字符 ≥2500、`<!-- ILLUST_\d+ -->` ≥3、`## 章末钩子` 存在、无 `**格子**`/`### Panel` 等漫画字段污染）+ 对白格式 `「.*?」——[^\n]+` ≥8 条。残留 >0 即丢弃重写，不要逐句修。详见 `references/light-novel-heredoc-pitfall.md`。

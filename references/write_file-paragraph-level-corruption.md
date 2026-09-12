@@ -45,7 +45,7 @@
 2. **确认文件落盘状态**：用 `read_file` 或 `terminal` 运行 `python3 -c "t=open('...'); print(t[:500], t[-500:])"` 检查文件首尾。若已落盘且损坏，进入第 3 步；若未落盘（或文件不存在），先不处理。
 3. **整章用 `write_file` 覆写**——不要用 `patch` 逐段重写。覆写时先在心理中整理好全章剧本再开始 `write_file` 调用，确保 `content` 参数纯粹是章节正文。
 4. **写入后立即跑标准自检**（见 note 17 七项自检 SOP）——但需要**新增段落级可读性检查**：除了正则扫污染，还要 `read_file` 通读首尾各 200 行，由人眼确认段内是叙述句而非散碎词堆砌。机械验证通过不代表整章可读。
-5. **若覆写仍损坏**：换用模式三「单脚本全落盘」——把章节内容作为 Python 中的 `content = """..."""` 字符串，通过 `write_file` 写 Python 脚本 + `terminal` 执行（见 `references/light-novel-single-script-generation-2026-07-08.md`）。独立脚本走的是另一条传输路径，常能避开 `write_file` 直写模式下的肌理损坏。
+5. **若覆写仍损坏**：换用模式三「单脚本全落盘」——把章节内容作为 Python 中的 `content = """..."""` 字符串，通过 `write_file` 写 Python 脚本 + `terminal` 执行（见 `references/light-novel-single-script-generation.md`）。独立脚本走的是另一条传输路径，常能避开 `write_file` 直写模式下的肌理损坏。
 6. **若仍失败**：把章节拆成 ≥3 段（开场/中段/钩子），分批 `write_file` 写入，每段 ≤2K 中文字符——缩短单个 `tool call` 的 `content` 长度是已知能大幅降低损坏概率的物理隔离。
 
 ## 对 note 17 的补充

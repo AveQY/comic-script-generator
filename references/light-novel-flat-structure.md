@@ -137,4 +137,4 @@ print(f'format-A={fmt_a} format-B={fmt_b}')
 
 - 本会话（2026-07-08）《第二人生体验馆》项目：平铺结构 + 角色名前缀对白 + 根目录章节文件
 - `references/light-novel-quickstart-recipe.md`：标准 light_novel/ 子目录模式
-- `references/light-novel-single-batch-generation-2026-07-08.md`：元数据集中脚本 + 逐章写入模式
+- `references/light-novel-single-batch-generation.md`：元数据集中脚本 + 逐章写入模式

@@ -90,7 +90,7 @@ def save_cache(data):
         pass
 
 
-def check_update():
+def check_update(force=False):
     """Main update check logic."""
     result = {
         "timestamp": datetime.now().isoformat(),
@@ -100,19 +100,20 @@ def check_update():
         "message": "",
     }
 
-    # 0. Fresh cache short-circuit: skip network check within TTL
-    cached = load_cache()
-    if cached.get("action") == "up_to_date":
-        try:
-            age = datetime.now() - datetime.fromisoformat(cached["timestamp"])
-            if age < timedelta(hours=CACHE_TTL_HOURS):
-                result["action"] = "up_to_date"
-                result["message"] = (
-                    f"{CACHE_TTL_HOURS}小时内已检查过，使用缓存结果（{cached.get('message', '')}）"
-                )
-                return result
-        except Exception:
-            pass
+    # 0. Fresh cache short-circuit: skip network check within TTL (unless --force)
+    if not force:
+        cached = load_cache()
+        if cached.get("action") == "up_to_date":
+            try:
+                age = datetime.now() - datetime.fromisoformat(cached["timestamp"])
+                if age < timedelta(hours=CACHE_TTL_HOURS):
+                    result["action"] = "up_to_date"
+                    result["message"] = (
+                        f"{CACHE_TTL_HOURS}小时内已检查过，使用缓存结果（{cached.get('message', '')}）；加 --force 可强制检查"
+                    )
+                    return result
+            except Exception:
+                pass
 
     # 1. Check network
     if not check_network():
@@ -146,6 +147,7 @@ def check_update():
 
 
 if __name__ == "__main__":
-    result = check_update()
+    force = "--force" in sys.argv
+    result = check_update(force=force)
     print(json.dumps(result, ensure_ascii=False))
     sys.exit(0 if result["action"] != "update_needed" else 1)

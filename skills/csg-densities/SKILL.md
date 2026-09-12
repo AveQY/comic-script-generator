@@ -1,5 +1,6 @@
 ---
 name: csg-densities
+version: 1.0.0
 description: >-
   三种分镜密度模式（A/B/C）详细说明、Page/Panel 漫画脚本格式模板、标准 Page/Panel 强制模板、必填字段要求。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, terminal

@@ -49,12 +49,12 @@ print(f"ILLUST: {c.count('<!-- ILLUST_')}")
 
 ### 方案 B：单脚本批量写入（≤6 文件，推荐已有目录结构的项目）
 
-将全部元数据 + 章节内容写入一个 Python 脚本，末尾附验证段。详见 `references/light-novel-single-script-generation-2026-07-08.md`。
+将全部元数据 + 章节内容写入一个 Python 脚本，末尾附验证段。详见 `references/light-novel-single-script-generation.md`。
 
 ### 方案 C：分拆工具调用
 
 - 先 `write_file` 写入不含中文的骨架/模板
-- 再用后续 `patch` 分多次注入中文段落（注意 patch 也有类似陷阱，见 `references/patch-intext-pitfall-2026-07-08.md`）
+- 再用后续 `patch` 分多次注入中文段落（注意 patch 也有类似陷阱，见 `references/patch-intext-pitfall.md`）
 
 **不推荐**：逐行 shell heredoc（已知会损坏中文内容）。
 

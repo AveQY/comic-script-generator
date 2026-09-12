@@ -1,5 +1,6 @@
 ---
 name: csg-deployment
+version: 1.0.0
 description: >-
   Reader 服务器部署与访问说明、后端 API 路由、前端双模式阅读、缩略图加速、线上 vs skill 双实现注意事项。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, terminal

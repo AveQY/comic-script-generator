@@ -1,5 +1,6 @@
 ---
 name: csg-mode8-evaluation
+version: 1.0.0
 description: >-
   对已生成的漫画/小说项目进行 6 维爆款潜力评估（CH×2+ER×2+CA×1.5+PQ×1.5+AD×1.5+CO×1），借鉴 cheat-on-content 方法论。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, terminal

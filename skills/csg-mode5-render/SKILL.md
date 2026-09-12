@@ -1,5 +1,6 @@
 ---
 name: csg-mode5-render
+version: 1.0.0
 description: >-
   将 comic-script-generator 的分镜稿通过 story-renderer 渲染为漫画图片。支持导出、并发渲染、气泡叠加、漫画页合成。
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, terminal

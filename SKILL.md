@@ -1,7 +1,11 @@
 ---
 name: comic-script-generator
-description: 根据大纲或热点生成漫画分镜稿/小说/短剧分镜脚本，支持项目管理、角色档案、伏笔追踪。总协议+路由器，具体工作流在 skills/ 子 skill 中。
-version: 1.27.1
+description: >-
+  根据大纲或热点生成漫画分镜稿/小说/短剧分镜脚本，支持项目管理、角色档案、伏笔追踪。总协议+路由器，具体工作流在 skills/ 子 skill 中。
+  当用户说"帮我画漫画/画个漫画"、"写漫画脚本/分镜"、"写小说/写爽文/写轻小说/写网文"、"抓热点做内容"、"把这段小说变成短剧脚本/分镜"、
+  "续写/继续写下一集/下一章"、"渲染漫画/出图/生成漫画图片"、"评估哪篇是爆款"、"部署 Reader/阅读器"等创作生产需求时，
+  应自动加载本 skill 并按路由表进入对应子 skill。
+version: 1.28.0
 tags: [creative, comic, screenplay, storyboard]
 ---
 
@@ -51,10 +55,10 @@ tags: [creative, comic, screenplay, storyboard]
 
 **每次启动该 skill 前，必须先检查是否有更新：**
 
-1. 运行 `python scripts/check_update.py`
+1. 运行 `python scripts/check_update.py`（可加 `--force` 跳过缓存强制联网检查）
 2. 脚本会自动：
-   - 检测 GitHub 网络连通性
-   - 比对本地与远程 `origin/main` 的 commit SHA
+   - 命中 24 小时内缓存且上次结果为"已是最新"时直接返回缓存结果，不发起网络请求
+   - 否则检测 GitHub 网络连通性，比对本地与远程 `origin/main` 的 commit SHA
    - 输出 JSON 结果（`network_available`、`update_available`、`action`）
 3. 如果网络不通或无法获取 commit，脚本返回 `action: "skip"`，继续正常使用当前 skill
 4. 如果 `action: "update_needed"`，先执行 `git pull origin main` 更新 skill，再继续使用
@@ -117,11 +121,11 @@ python scripts/consistency_check.py episodes/epXXX_xxx.md --project-dir projects
 
 ### 8. 始终加载 skill 后再写稿/写小说
 
-只要涉及漫画脚本生成或轻小说生成，必须先通过 `skill_view(name='comic-script-generator')` 加载本 skill 再开始。
+只要涉及漫画脚本生成或轻小说生成，必须先按当前 Agent 环境的 skill 加载机制（Hermes 为 `skill_view(name='comic-script-generator')`，其他 Agent 为等效的 skill 加载/文件读取方式）加载本 skill 再开始。
 
 ### 9. 更新 skill 版本号规则
 
-更新 skill 功能时必须同步更新 frontmatter 的 `version:` 字段和 changelog 条目。
+更新 skill 功能时必须同步更新 frontmatter 的 `version:` 字段和 changelog 条目；**改动发生在某个子 skill 内时，同时递增该子 skill 自己的 version，并在主 changelog 注明涉及哪个子 skill**。
 
 ## 用户工作流偏好
 
@@ -130,7 +134,7 @@ python scripts/consistency_check.py episodes/epXXX_xxx.md --project-dir projects
 - **风格统一优先**：同一项目的所有集必须使用相同的 AI 绘图风格。
 - **Reader 新功能用独立视图，不用模态框**。
 - **API 文档走自描述接口**。
-- **双副本同步**：修改后立即确认状态「已更新本地，未 commit/push」。
+- **双副本同步**（作者个人工作流，外部用户可忽略）：修改后立即确认状态「已更新本地，未 commit/push」。
 - **分阶段交付**：优先分"生成稿子"和"渲染漫画"两个阶段。
 - **只审格式，不审剧情**。
 - **并行 dispatch 而非串行等待**：有 N 个独立任务时一次性 dispatch 所有批次。
@@ -181,6 +185,7 @@ python scripts/consistency_check.py episodes/epXXX_xxx.md --project-dir projects
 
 ## 更新日志
 
+- **v1.28.0（2026-09-12）**：references 去重合并——6 篇高度重叠的渲染/Reader 踩坑记录（reader-rendering-lessons、rendering-reader-lessons、manga-rendering-lessons、rendering-and-reader-ops、reader-and-manga-logic、logic-style-rendering-and-reader-debug）合并为 `references/manga-rendering-and-reader-lessons.md`（原文可从 git 历史找回），references 总数 63→58；修复 8 处指向带日期后缀旧文件名的悬空引用；13 个子 skill frontmatter 补充 version 字段；check_update.py 支持 `--force` 跳过缓存；description 补充口语化触发场景；规则 8 改为跨 Agent 通用表述；"双副本同步"标注为作者个人工作流。
 - **v1.27.1（2026-09-12）**：修复 check_update.py 缓存缺陷（load_cache 之前从未被调用，导致缓存写而无用、每次调用都发起网络检查），新增 24 小时 TTL 短路逻辑；更新日志按时间正序排列；README 补全至 v1.27.0 实际内容（子 skill 架构、23 个脚本、references 分类索引）。
 - **v1.27.0（2026-08-08）**：新增文笔风格（prose_style）配置。创建小说时可多选文笔风格（16种预设），写入 config.json + prose_style_guide.md，续写时自动沿用，颗粒度为单本小说。修复 init_project.py 配置生成逻辑。
 - v1.26.5（2026-08-06）：重构为路由式架构。主 SKILL.md 精简为总协议+路由器，8 个模式 + 5 个辅助功能拆分为独立子 skill 文件（`skills/csg-*/SKILL.md`），仿 cheat-on-content 设计。每个子 skill 独立维护，降低上下文加载开销。

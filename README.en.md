@@ -1,7 +1,7 @@
 # Comic Script Generator
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v1.27.1-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.28.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/format-Page%2FPanel%20%2B%20Light%20Novel%20%2B%20Drama-orange.svg" alt="Format">
@@ -22,7 +22,7 @@
 
 ---
 
-> **📌 Note**: Since v1.26.5 the skill uses a **router architecture** — the root `SKILL.md` acts as a thin protocol + router, with concrete workflows split into 13 sub-skills under `skills/csg-*` (8 generation modes + 5 utilities). The [Chinese README](README.md) is the primary document and may be ahead of this translation. See [`references/README.md`](references/README.md) for the categorized index of all 71 reference docs.
+> **📌 Note**: Since v1.26.5 the skill uses a **router architecture** — the root `SKILL.md` acts as a thin protocol + router, with concrete workflows split into 13 sub-skills under `skills/csg-*` (8 generation modes + 5 utilities). The [Chinese README](README.md) is the primary document and may be ahead of this translation. See [`references/README.md`](references/README.md) for the categorized index of all 58 reference docs.
 
 ## Introduction
 
